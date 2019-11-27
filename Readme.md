@@ -1,7 +1,7 @@
 # Личный проект «Большое путешествие» [![Build status][travis-image]][travis-url]
 
 * Студент: [Мария](https://up.htmlacademy.ru/ecmascript/10/user/587885).
-* Наставник: `Неизвестно`.
+* Наставник: `John Doe`.
 
 ---
 
