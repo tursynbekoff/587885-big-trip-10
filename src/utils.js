@@ -2,7 +2,24 @@ import {MONTHS} from "./const.js";
 
 export const formatTime = (UTCTimestamp) => {
   const date = new Date(UTCTimestamp);
-  return `${date.getHours()}:${date.getMinutes()}`;
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  return `${hours < 10 ? `0` + hours : hours}:${minutes < 10 ? `0` + minutes : minutes}`;
+};
+
+export const formatTimeDuration = function (UTCTimestamp) {
+  const date = new Date(UTCTimestamp);
+  const minutes = date.getMinutes();
+  const hours = date.getHours();
+  const days = date.getDay();
+  if (days > 0) {
+    return `${days < 10 ? `0` + days + `D ` : days + `D `}${hours < 10 ? `0` + hours + `H ` : hours + `H `}${minutes < 10 ? `0` + minutes + `M` : minutes + `M`}`;
+  }
+  if (hours > 0) {
+    return `${hours < 10 ? `0` + hours + `H ` : hours + `H `}${minutes < 10 ? `0` + minutes + `M` : minutes + `M`}`;
+  } else {
+    return `${minutes < 10 ? `0` + minutes + `M` : minutes + `M`}`;
+  }
 };
 
 export const getRandomInteger = (min, max) =>
@@ -23,7 +40,7 @@ export const getRandomDate = () => {
   return (
     Date.now() +
     1 +
-    Math.floor(Math.random() * 7) * 24 * getRandomInteger(0, 60) * 60 * 1000
+    Math.floor(Math.random() * 24 * 60 * 60 * 1000)
   );
 };
 

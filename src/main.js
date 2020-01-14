@@ -38,7 +38,9 @@ render(boardElement, createOrEditTripTemplate(days), `beforeend`);
 
 render(boardElement, createTripDaysTemplate(days), `beforeend`);
 
-const tripsListElement = tripEventsElement.querySelector(`.trip-events__list`);
+//const tripsListElement = tripEventsElement.querySelector(`.trip-events__list`);
 
-// days.forEach((day) => render(tripsListElement, createDayMarkup(day.dayInfo), `beforeend`));
-// days[0].dayInfo.forEach((point) => render(tripsListElement, createDayMarkup(point), `beforeend`))
+
+const fullPrice = days.flatMap((day) => day.dayInfo).reduce((price, point) => price + point.price, 0);
+document.querySelector(`.trip-info__cost-value`).textContent = fullPrice;
+

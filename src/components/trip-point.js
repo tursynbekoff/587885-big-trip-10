@@ -1,5 +1,5 @@
 import {createOffersTemplate} from './trip-offers';
-import {getHoursAndMinutes, formatTime} from '../utils.js';
+import {formatTimeDuration, formatTime} from '../utils.js';
 
 export const createDayMarkup = (tripPoint) => {
   const {type, destination, price, offers, startDate, endDate, duration} = tripPoint;
@@ -22,9 +22,9 @@ export const createDayMarkup = (tripPoint) => {
       <p class="event__time">
         <time class="event__start-time" datetime="${formatTime(startDate)}">${formatTime(startDate)}</time>
         &mdash;
-        <time class="event__end-time" datetime="${formatTime(endDate)}">${formatTime(startDate)}</time>
+        <time class="event__end-time" datetime="${formatTime(endDate)}">${formatTime(endDate)}</time>
       </p>
-      <p class="event__duration">${duration}</p>
+      <p class="event__duration">${formatTimeDuration(duration)}</p>
     </div>
 
     <p class="event__price">

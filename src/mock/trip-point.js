@@ -40,11 +40,10 @@ const OFFERS = [
 // const ONE_WEEK = 604800000;
 
 const createTripPoint = () => {
-  const startDate = getRandomDate();
-  const endDate = getRandomDate();
-  // if (startDate.getTime() > endDate.getTime()) {
-  //   [startDate, endDate] = [endDate, startDate];
-  // }
+  const firstDate = getRandomDate();
+  const secondDate = getRandomDate();
+  const startDate = Math.min(firstDate, secondDate);
+  const endDate = Math.max(firstDate, secondDate);
 
   return {
     type: getRandomArrayItem(ROUTE_TYPES),
@@ -55,7 +54,7 @@ const createTripPoint = () => {
     offers: getOffers(OFFERS),
     startDate,
     endDate,
-    duretion: endDate - startDate,
+    duration: endDate - startDate,
   };
 };
 
