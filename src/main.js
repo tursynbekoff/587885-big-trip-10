@@ -1,26 +1,30 @@
 import {createFilterTemplate} from './components/filter.js';
 import {createSiteMenuTemplate} from './components/menu.js';
-import {createRouteInfoTemplate} from './components/route-info.js';
+import {createTripInfoTemplate} from './components/trip-info';
 import {createSortingTemplate} from './components/sorting.js';
 import {createBoardTripTemplate} from './components/trip-board.js';
-import {createDayTripTemplate} from './components/trip-day.js';
+import {createDayMarkup} from './components/trip-point.js';
 import {createOrEditTripTemplate} from './components/trip-edit.js';
+import {createTripDaysTemplate} from './components/trip-days';
 
-const DAYS_COUNT = 3;
+import {filters} from './mock/filter';
+import {menu} from './mock/menu';
+import {days} from './mock/trip-point';
 
 const render = (container, template, place) => {
   container.insertAdjacentHTML(place, template);
 };
 
 const headerElement = document.querySelector(`.page-header`);
-const tripInfoElement = headerElement.querySelector(`.trip-info`);
 
-render(tripInfoElement, createRouteInfoTemplate(), `afterbegin`);
+const tripInfoElement = headerElement.querySelector(`.trip-info`);
+// render(tripInfoElement, createRouteInfoTemplate(), `afterbegin`);
+render(tripInfoElement, createTripInfoTemplate(days), `afterbegin`);
 
 const controlElement = headerElement.querySelector(`.trip-controls`);
 
-render(controlElement, createSiteMenuTemplate(), `beforeend`);
-render(controlElement, createFilterTemplate(), `beforeend`);
+render(controlElement, createSiteMenuTemplate(menu), `beforeend`);
+render(controlElement, createFilterTemplate(filters), `beforeend`);
 
 const mainElement = document.querySelector(`.page-main`);
 const tripEventsElement = mainElement.querySelector(`.trip-events`);
@@ -29,7 +33,14 @@ render(tripEventsElement, createSortingTemplate(), `beforeend`);
 render(tripEventsElement, createBoardTripTemplate(), `beforeend`);
 
 const boardElement = tripEventsElement.querySelector(`.trip-days`);
+render(boardElement, createOrEditTripTemplate(days), `beforeend`);
 
-render(boardElement, createOrEditTripTemplate(), `beforeend`);
 
-new Array(DAYS_COUNT).fill(``).forEach(() => render(boardElement, createDayTripTemplate(), `beforeend`));
+render(boardElement, createTripDaysTemplate(days), `beforeend`);
+
+//const tripsListElement = tripEventsElement.querySelector(`.trip-events__list`);
+
+
+const fullPrice = days.flatMap((day) => day.dayInfo).reduce((price, point) => price + point.price, 0);
+document.querySelector(`.trip-info__cost-value`).textContent = fullPrice;
+
