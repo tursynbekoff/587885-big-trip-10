@@ -6,14 +6,15 @@ import {createBoardTripTemplate} from './components/trip-board.js';
 import {createTripPointTemplate} from './components/trip-point.js';
 import {createOrEditTripTemplate} from './components/trip-edit.js';
 import {createTripDaysTemplate} from './components/trip-days';
+import {RenderPosition, render} from './utils.js';
 
 import {filters} from './mock/filter';
 import {menu} from './mock/menu';
 import {days} from './mock/trip-point';
 
-const render = (container, template, place) => {
-  container.insertAdjacentHTML(place, template);
-};
+// const render = (container, template, place) => {
+//   container.insertAdjacentHTML(place, template);
+// };
 
 const headerElement = document.querySelector(`.page-header`);
 
