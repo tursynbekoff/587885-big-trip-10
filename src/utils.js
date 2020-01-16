@@ -12,7 +12,7 @@ export const createElement = (template) => {
   return newElement.firstChild;
 };
 
-export const render = (container, element, place) {
+export const render = (container, element, place) => {
   switch (place) {
     case RenderPosition.AFTERBEGIN:
       container.prepend(element);
@@ -69,7 +69,7 @@ export const getRandomDate = () => {
 
 export const getMonthName = (date) => MONTHS[date.getMonth()];
 
-export const getFullDate = (date) => (`${date.getFullYear()}-${getHoursAndMinutes(date.getMonth())}-${getHoursAndMinutes(date.getDate())}`);
+export const getFullDate = (date) => (`${date.getYear()}-${date.getMonth()}-${getHoursAndMinutes(date.getDate())}`);
 
 export const getHoursAndMinutes = (time) => {
   const date = new Date(time);

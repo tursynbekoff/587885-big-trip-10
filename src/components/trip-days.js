@@ -1,27 +1,25 @@
 import {getFullDate, getMonthName, createElement} from "../utils.js";
+// import {days} from "../mock/trip-point.js";
 
-const createTripDaysTemplate = (days) => (
-  days.map((elem, index) => (`
-    <li class="trip-days__item  day">
+const createTripDayTemplate = (day) => (
+  `<li class="trip-days__item  day">
       <div class="day__info">
-        <span class="day__counter">${elem.day}</span>
-        <time class="day__date" datetime="${getFullDate(elem.dayDate)}">${getMonthName(elem.dayDate)} ${elem.dayDate.getDate() + index}</time>
+        <span class="day__counter">${day.day}</span>
+        <time class="day__date" datetime="${getFullDate(day.dayDate)}">${getMonthName(day.dayDate)} ${day.dayDate.getDate() + day.day}</time>
       </div>
       <ul class="trip-events__list">
       </ul>
-    </li>
-    `))
-    .join(`\n`)
+    </li>`
 );
 
-export default class TripDays {
-  constructor(days) {
-    this._days = days;
+export default class TripDay {
+  constructor(day) {
+    this._day = day;
     this._element = null;
   }
 
   getTemplate() {
-    return createTripDaysTemplate(this._days);
+    return createTripDayTemplate(this._day);
   }
 
   getElement() {

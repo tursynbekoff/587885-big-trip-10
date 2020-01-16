@@ -27,7 +27,7 @@ export default class TripInfo {
   }
 
   getTemplate() {
-    return createTripInfoTemplate(this.days);
+    return createTripInfoTemplate(this._days);
   }
 
   getElement() {
