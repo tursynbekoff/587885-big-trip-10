@@ -3,7 +3,7 @@ import {createSiteMenuTemplate} from './components/menu.js';
 import {createTripInfoTemplate} from './components/trip-info';
 import {createSortingTemplate} from './components/sorting.js';
 import {createBoardTripTemplate} from './components/trip-board.js';
-import {createDayMarkup} from './components/trip-point.js';
+import {createTripPointTemplate} from './components/trip-point.js';
 import {createOrEditTripTemplate} from './components/trip-edit.js';
 import {createTripDaysTemplate} from './components/trip-days';
 
@@ -38,8 +38,11 @@ render(boardElement, createOrEditTripTemplate(days), `beforeend`);
 
 render(boardElement, createTripDaysTemplate(days), `beforeend`);
 
-//const tripsListElement = tripEventsElement.querySelector(`.trip-events__list`);
+const tripsListElements = Array.from(tripEventsElement.querySelectorAll(`.trip-events__list`));
 
+days.forEach((day, index) =>
+  day.dayInfo.forEach((data) => render(tripsListElements[index], createTripPointTemplate(data), `beforeend`))
+);
 
 const fullPrice = days.flatMap((day) => day.dayInfo).reduce((price, point) => price + point.price, 0);
 document.querySelector(`.trip-info__cost-value`).textContent = fullPrice;

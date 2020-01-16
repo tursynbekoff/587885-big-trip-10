@@ -1,5 +1,5 @@
 import {getFullDate, getMonthName} from "../utils.js";
-import {createDayMarkup} from './trip-point.js';
+
 
 export const createTripDaysTemplate = (days) => (
   days.map((elem, index) => (`
@@ -9,7 +9,6 @@ export const createTripDaysTemplate = (days) => (
         <time class="day__date" datetime="${getFullDate(elem.dayDate)}">${getMonthName(elem.dayDate)} ${elem.dayDate.getDate() + index}</time>
       </div>
       <ul class="trip-events__list">
-        ${elem.dayInfo.map((point) => createDayMarkup(point)).join(`\n`)}
       </ul>
     </li>
     `))

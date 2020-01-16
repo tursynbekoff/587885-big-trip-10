@@ -1,7 +1,7 @@
 import {createOffersTemplate} from './trip-offers';
 import {formatTimeDuration, formatTime} from '../utils.js';
 
-export const createDayMarkup = (tripPoint) => {
+export const createTripPointTemplate = (tripPoint) => {
   const {type, destination, price, offers, startDate, endDate, duration} = tripPoint;
   const extraOffers = createOffersTemplate(Array.from(offers));
 
