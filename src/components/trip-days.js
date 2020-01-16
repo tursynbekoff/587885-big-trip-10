@@ -1,7 +1,6 @@
-import {getFullDate, getMonthName} from "../utils.js";
+import {getFullDate, getMonthName, createElement} from "../utils.js";
 
-
-export const createTripDaysTemplate = (days) => (
+const createTripDaysTemplate = (days) => (
   days.map((elem, index) => (`
     <li class="trip-days__item  day">
       <div class="day__info">
@@ -14,3 +13,25 @@ export const createTripDaysTemplate = (days) => (
     `))
     .join(`\n`)
 );
+
+export default class TripDays {
+  constructor(days) {
+    this._days = days;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTripDaysTemplate(this._days);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate);
+    }
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
