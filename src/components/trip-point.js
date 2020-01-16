@@ -1,7 +1,17 @@
-import {createOffersTemplate} from './trip-offers';
-import {formatTimeDuration, formatTime} from '../utils.js';
+// import {createOffersTemplate} from './trip-offers';
+import {formatTimeDuration, formatTime, createElement} from '../utils.js';
 
-export const createTripPointTemplate = (tripPoint) => {
+const createOffersTemplate = (offers) => {
+  return offers.map((it) => (
+    `<li class="event__offer">
+            <span class="event__offer-title">${it.name}</span>
+            &plus;
+            &euro;&nbsp;<span class="event__offer-price">${it.cost}</span>
+           </li>`
+  )).join(``);
+};
+
+const createTripPointTemplate = (tripPoint) => {
   const {type, destination, price, offers, startDate, endDate, duration} = tripPoint;
   const extraOffers = createOffersTemplate(Array.from(offers));
 
@@ -43,4 +53,24 @@ export const createTripPointTemplate = (tripPoint) => {
 </li>`;
 };
 
+export default class TripPoint {
+  constructor(tripPoint) {
+    this._tripPoint = tripPoint;
+    this._element = null;
+  }
 
+  getTemplate() {
+    return createTripPointTemplate(this._tripPoint);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
