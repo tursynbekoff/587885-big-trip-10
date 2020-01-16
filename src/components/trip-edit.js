@@ -193,7 +193,7 @@ const createTripEditTemplate = () => {
 };
 
 
-export default class tripEdit {
+export default class TripEdit {
   constructor() {
     this._element = null;
   }
