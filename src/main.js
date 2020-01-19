@@ -29,15 +29,42 @@ render(tripEventsElement, new SortingComponent().getElement(), RenderPosition.BE
 render(tripEventsElement, new TripBoardComponent().getElement(), RenderPosition.BEFOREEND);
 
 const boardElement = tripEventsElement.querySelector(`.trip-days`);
-render(boardElement, new TripEditComponent().getElement(), RenderPosition.BEFOREEND);
+// это ща уберем
+// render(boardElement, new TripEditComponent(days[0].dayInfo[0]).getElement(), RenderPosition.BEFOREEND);
 
 days.forEach((day) => render(boardElement, new TripDayComponent(day).getElement(), RenderPosition.BEFOREEND));
 
 const tripsListElements = Array.from(tripEventsElement.querySelectorAll(`.trip-events__list`));
 
+
+const renderTripPoints = (tripsListElement, tripPoint) => {
+  const tripPointComponent = new TripPointComponent(tripPoint);
+  const tripEditComponent = new TripEditComponent(tripPoint);
+
+  const editButton = tripPointComponent.getElement().querySelector(`.event__rollup-btn`);
+  editButton.addEventListener(`click`, () => {
+    tripsListElement.replaceChild(tripEditComponent.getElement(), tripPointComponent.getElement());
+  });
+
+  const saveButton = tripEditComponent.getElement().querySelector(`form`);
+  saveButton.addEventListener(`submit`, () => {
+    tripsListElement.replaceChild(tripPointComponent.getElement(), tripEditComponent.getElement());
+  });
+
+  return render(tripsListElement, tripPointComponent.getElement(), RenderPosition.BEFOREEND);
+};
+
+// days.forEach((day, index) =>
+//   day.dayInfo.forEach((data) => {
+//     render(tripsListElements[index], new TripPointComponent(data).getElement(), RenderPosition.BEFOREEND);
+//   })
+// );
+
+// renderTripPoints(tripsListElements[index], data)
+
 days.forEach((day, index) =>
   day.dayInfo.forEach((data) => {
-    render(tripsListElements[index], new TripPointComponent(data).getElement(), RenderPosition.BEFOREEND)
+    renderTripPoints(tripsListElements[index], data);
   })
 );
 

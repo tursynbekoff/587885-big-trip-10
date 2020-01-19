@@ -1,7 +1,11 @@
 import {getMonthName, createElement} from "../utils.js";
 
 const createCitiesTemplate = (points) => {
-  return points.map(({destination}) => destination).join(` — `);
+  if (points.length <= 2) {
+    return points.map(({destination}) => destination).join(` — `);
+  } else {
+    return `${points[0].destination} — ... —  ${points[points.length - 1].destination}`;
+  }
 };
 
 const getTripDates = (data) => {

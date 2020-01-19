@@ -1,19 +1,11 @@
 // import {createOffersTemplate} from './trip-offers';
 import {formatTimeDuration, formatTime, createElement} from '../utils.js';
-
-const createOffersTemplate = (offers) => {
-  return offers.map((it) => (
-    `<li class="event__offer">
-            <span class="event__offer-title">${it.name}</span>
-            &plus;
-            &euro;&nbsp;<span class="event__offer-price">${it.cost}</span>
-           </li>`
-  )).join(``);
-};
+import OffersComponent from './trip-offers.js';
 
 const createTripPointTemplate = (tripPoint) => {
-  const {type, destination, price, offers, startDate, endDate, duration} = tripPoint;
-  const extraOffers = createOffersTemplate(Array.from(offers));
+  const {type, destination, price, offers, startDate, endDate} = tripPoint;
+  const duration = endDate - startDate;
+  const extraOffers = new OffersComponent(Array.from(offers)).getTemplate();
 
 
   let preposition = `to`;

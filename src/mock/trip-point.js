@@ -1,17 +1,18 @@
-import {getRandomArrayItem, getDescriptions, getOffers, getRandomDate} from '../utils';
+import {getRandomArrayItem, getDescriptions, getOffers, getRandomDate} from '../utils.js';
+import {ROUTE_TYPES} from '../const.js';
 
-const ROUTE_TYPES = [
-  `Bus`,
-  `Check-in`,
-  `Drive`,
-  `Flight`,
-  `Restaurant`,
-  `Ship`,
-  `Sightseeing`,
-  `Taxi`,
-  `Train`,
-  `Transport`,
-];
+// const ROUTE_TYPES = [
+//   `Bus`,
+//   `Check-in`,
+//   `Drive`,
+//   `Flight`,
+//   `Restaurant`,
+//   `Ship`,
+//   `Sightseeing`,
+//   `Taxi`,
+//   `Train`,
+//   `Transport`,
+// ];
 
 const CITIES = [
   `London`,
@@ -31,10 +32,18 @@ const DESCRIPTIONS = [
 ];
 
 const OFFERS = [
-  {type: `Check-In`, name: `Add luggage`, cost: 10},
-  {type: `Flight`, name: `Switch to comfort class`, cost: 150},
-  {type: `Restaurant`, name: `Add meal`, cost: `2`},
-  {type: `Train`, name: `Choose seats`, cost: `9`},
+  {type: `Check-In`, name: `Add luggage`, cost: 10, isChecked: false},
+  {type: `Flight`, name: `Switch to comfort class`, cost: 150, isChecked: false},
+  {type: `Restaurant`, name: `Add meal`, cost: `2`, isChecked: false},
+  {type: `Train`, name: `Choose seats`, cost: `9`, isChecked: true},
+  {type: `Check-In`, name: `Add luggage`, cost: 10, isChecked: false},
+  {type: `Flight`, name: `Switch to comfort class`, cost: 150, isChecked: false},
+  {type: `Restaurant`, name: `Add meal`, cost: `2`, isChecked: false},
+  {type: `Train`, name: `Choose seats`, cost: `9`, isChecked: true},
+  {type: `Check-In`, name: `Add luggage`, cost: 10, isChecked: false},
+  {type: `Flight`, name: `Switch to comfort class`, cost: 150, isChecked: false},
+  {type: `Restaurant`, name: `Add meal`, cost: `2`, isChecked: false},
+  {type: `Train`, name: `Choose seats`, cost: `9`, isChecked: true},
 ];
 
 // const ONE_WEEK = 604800000;
@@ -54,7 +63,6 @@ const createTripPoint = () => {
     offers: getOffers(OFFERS),
     startDate,
     endDate,
-    duration: endDate - startDate,
   };
 };
 

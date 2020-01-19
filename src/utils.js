@@ -57,7 +57,7 @@ export const shuffleArray = (array) =>
 export const getDescriptions = (array) =>
   shuffleArray(array).slice(0, getRandomInteger(1, 3)).join(` `);
 
-export const getOffers = (array) => array.filter(() => Math.random() > 0.5).slice(0, getRandomInteger(0, 2));
+export const getOffers = (array) => array.filter(() => Math.random() > 0.5).slice(0, getRandomInteger(0, 6));
 
 export const getRandomDate = () => {
   return (
@@ -69,7 +69,12 @@ export const getRandomDate = () => {
 
 export const getMonthName = (date) => MONTHS[date.getMonth()];
 
-export const getFullDate = (date) => (`${date.getYear()}-${date.getMonth()}-${getHoursAndMinutes(date.getDate())}`);
+export const getFullDate = (UTCTimestamp) => {
+  const date = new Date(UTCTimestamp);
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+  return `${date.getYear() - 100}/${month < 10 ? `0` + month : month}/${day < 10 ? `0` + day : day}`;
+};
 
 export const getHoursAndMinutes = (time) => {
   const date = new Date(time);
