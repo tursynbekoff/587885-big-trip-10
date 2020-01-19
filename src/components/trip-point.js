@@ -1,9 +1,11 @@
-import {createOffersTemplate} from './trip-offers';
-import {formatTimeDuration, formatTime} from '../utils.js';
+// import {createOffersTemplate} from './trip-offers';
+import {formatTimeDuration, formatTime, createElement} from '../utils.js';
+import OffersComponent from './trip-offers.js';
 
-export const createDayMarkup = (tripPoint) => {
-  const {type, destination, price, offers, startDate, endDate, duration} = tripPoint;
-  const extraOffers = createOffersTemplate(Array.from(offers));
+const createTripPointTemplate = (tripPoint) => {
+  const {type, destination, price, offers, startDate, endDate} = tripPoint;
+  const duration = endDate - startDate;
+  const extraOffers = new OffersComponent(Array.from(offers)).getTemplate();
 
 
   let preposition = `to`;
@@ -43,4 +45,24 @@ export const createDayMarkup = (tripPoint) => {
 </li>`;
 };
 
+export default class TripPoint {
+  constructor(tripPoint) {
+    this._tripPoint = tripPoint;
+    this._element = null;
+  }
 
+  getTemplate() {
+    return createTripPointTemplate(this._tripPoint);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

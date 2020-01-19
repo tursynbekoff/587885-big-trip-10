@@ -1,45 +1,72 @@
-import {createFilterTemplate} from './components/filter.js';
-import {createSiteMenuTemplate} from './components/menu.js';
-import {createTripInfoTemplate} from './components/trip-info';
-import {createSortingTemplate} from './components/sorting.js';
-import {createBoardTripTemplate} from './components/trip-board.js';
-import {createDayMarkup} from './components/trip-point.js';
-import {createOrEditTripTemplate} from './components/trip-edit.js';
-import {createTripDaysTemplate} from './components/trip-days';
+import FilterComponent from './components/filter.js';
+import SiteMenuComponent from './components/menu.js';
+import TripInfoComponent from './components/trip-info';
+import SortingComponent from './components/sorting.js';
+import TripBoardComponent from './components/trip-board.js';
+import TripPointComponent from './components/trip-point.js';
+import TripEditComponent from './components/trip-edit.js';
+import TripDayComponent from './components/trip-days';
+import {RenderPosition, render} from './utils.js';
 
 import {filters} from './mock/filter';
 import {menu} from './mock/menu';
 import {days} from './mock/trip-point';
 
-const render = (container, template, place) => {
-  container.insertAdjacentHTML(place, template);
-};
-
 const headerElement = document.querySelector(`.page-header`);
 
 const tripInfoElement = headerElement.querySelector(`.trip-info`);
-// render(tripInfoElement, createRouteInfoTemplate(), `afterbegin`);
-render(tripInfoElement, createTripInfoTemplate(days), `afterbegin`);
+render(tripInfoElement, new TripInfoComponent(days).getElement(), RenderPosition.AFTERBEGIN);
 
 const controlElement = headerElement.querySelector(`.trip-controls`);
 
-render(controlElement, createSiteMenuTemplate(menu), `beforeend`);
-render(controlElement, createFilterTemplate(filters), `beforeend`);
+render(controlElement, new SiteMenuComponent(menu).getElement(), RenderPosition.BEFOREEND);
+render(controlElement, new FilterComponent(filters).getElement(), RenderPosition.BEFOREEND);
 
 const mainElement = document.querySelector(`.page-main`);
 const tripEventsElement = mainElement.querySelector(`.trip-events`);
 
-render(tripEventsElement, createSortingTemplate(), `beforeend`);
-render(tripEventsElement, createBoardTripTemplate(), `beforeend`);
+render(tripEventsElement, new SortingComponent().getElement(), RenderPosition.BEFOREEND);
+render(tripEventsElement, new TripBoardComponent().getElement(), RenderPosition.BEFOREEND);
 
 const boardElement = tripEventsElement.querySelector(`.trip-days`);
-render(boardElement, createOrEditTripTemplate(days), `beforeend`);
+// это ща уберем
+// render(boardElement, new TripEditComponent(days[0].dayInfo[0]).getElement(), RenderPosition.BEFOREEND);
+
+days.forEach((day) => render(boardElement, new TripDayComponent(day).getElement(), RenderPosition.BEFOREEND));
+
+const tripsListElements = Array.from(tripEventsElement.querySelectorAll(`.trip-events__list`));
 
 
-render(boardElement, createTripDaysTemplate(days), `beforeend`);
+const renderTripPoints = (tripsListElement, tripPoint) => {
+  const tripPointComponent = new TripPointComponent(tripPoint);
+  const tripEditComponent = new TripEditComponent(tripPoint);
 
-//const tripsListElement = tripEventsElement.querySelector(`.trip-events__list`);
+  const editButton = tripPointComponent.getElement().querySelector(`.event__rollup-btn`);
+  editButton.addEventListener(`click`, () => {
+    tripsListElement.replaceChild(tripEditComponent.getElement(), tripPointComponent.getElement());
+  });
 
+  const saveButton = tripEditComponent.getElement().querySelector(`form`);
+  saveButton.addEventListener(`submit`, () => {
+    tripsListElement.replaceChild(tripPointComponent.getElement(), tripEditComponent.getElement());
+  });
+
+  return render(tripsListElement, tripPointComponent.getElement(), RenderPosition.BEFOREEND);
+};
+
+// days.forEach((day, index) =>
+//   day.dayInfo.forEach((data) => {
+//     render(tripsListElements[index], new TripPointComponent(data).getElement(), RenderPosition.BEFOREEND);
+//   })
+// );
+
+// renderTripPoints(tripsListElements[index], data)
+
+days.forEach((day, index) =>
+  day.dayInfo.forEach((data) => {
+    renderTripPoints(tripsListElements[index], data);
+  })
+);
 
 const fullPrice = days.flatMap((day) => day.dayInfo).reduce((price, point) => price + point.price, 0);
 document.querySelector(`.trip-info__cost-value`).textContent = fullPrice;

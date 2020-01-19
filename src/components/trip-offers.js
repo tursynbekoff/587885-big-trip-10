@@ -1,4 +1,4 @@
-export const createOffersTemplate = (offers) => {
+const createOffersTemplate = (offers) => {
   return offers.map((it) => (
     `<li class="event__offer">
             <span class="event__offer-title">${it.name}</span>
@@ -7,3 +7,14 @@ export const createOffersTemplate = (offers) => {
            </li>`
   )).join(``);
 };
+
+export default class Offers {
+  constructor(offers) {
+    this._offers = offers;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createOffersTemplate(this._offers);
+  }
+}

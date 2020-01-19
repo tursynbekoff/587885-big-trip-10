@@ -1,5 +1,28 @@
 import {MONTHS} from "./const.js";
 
+export const RenderPosition = {
+  AFTERBEGIN: `afterbegin`,
+  BEFOREEND: `beforeend`
+};
+
+export const createElement = (template) => {
+  const newElement = document.createElement(`div`);
+  newElement.innerHTML = template;
+
+  return newElement.firstChild;
+};
+
+export const render = (container, element, place) => {
+  switch (place) {
+    case RenderPosition.AFTERBEGIN:
+      container.prepend(element);
+      break;
+    case RenderPosition.BEFOREEND:
+      container.append(element);
+      break;
+  }
+};
+
 export const formatTime = (UTCTimestamp) => {
   const date = new Date(UTCTimestamp);
   const hours = date.getHours();
@@ -34,7 +57,7 @@ export const shuffleArray = (array) =>
 export const getDescriptions = (array) =>
   shuffleArray(array).slice(0, getRandomInteger(1, 3)).join(` `);
 
-export const getOffers = (array) => array.filter(() => Math.random() > 0.5).slice(0, getRandomInteger(0, 2));
+export const getOffers = (array) => array.filter(() => Math.random() > 0.5).slice(0, getRandomInteger(0, 6));
 
 export const getRandomDate = () => {
   return (
@@ -46,7 +69,12 @@ export const getRandomDate = () => {
 
 export const getMonthName = (date) => MONTHS[date.getMonth()];
 
-export const getFullDate = (date) => (`${date.getFullYear()}-${getHoursAndMinutes(date.getMonth())}-${getHoursAndMinutes(date.getDate())}`);
+export const getFullDate = (UTCTimestamp) => {
+  const date = new Date(UTCTimestamp);
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+  return `${date.getYear() - 100}/${month < 10 ? `0` + month : month}/${day < 10 ? `0` + day : day}`;
+};
 
 export const getHoursAndMinutes = (time) => {
   const date = new Date(time);
