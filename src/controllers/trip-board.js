@@ -2,9 +2,10 @@ import TripPointComponent from '../components/trip-point.js';
 import NoPointComponent from '../components/no-trip-point.js';
 import TripEditComponent from '../components/trip-edit.js';
 import TripDayComponent from '../components/trip-days';
-import SortingComponent from '../components/sorting.js';
+import SortingComponent, {SortType} from '../components/sorting.js';
 import TripInfoComponent from '../components/trip-info';
 import {RenderPosition, render, replace} from '../utils/render.js';
+import { days } from '../mock/trip-point.js';
 
 
 const renderTripPoints = (tripsListElement, tripPoint) => {
@@ -49,19 +50,57 @@ export default class BoardController {
 
   render(tripDays) {
     const container = this._container.getElement();
-    // let fullPrice = 0;
     if (tripDays.length === 0) {
       render(container, this._noPointComponent, RenderPosition.BEFOREEND);
       return;
     }
 
+    this._sortingComponent.setSortTypeChangeHandler((sortType) => {
+      let sortedTripPoints = [];
+      let sortedDays = [];
+      // for (let i = 0; i < tripDays.length; i++) {
+      //   for (let j = 0; j < tripDays.dayInfo.length; j++) {
+      //     arrayOfTripPoints.push(tripDays[i].dayInfo[j]);
+      //   }
+      // }
+
+      let arrayOfTripPoints = tripDays.flatMap((day) => day.dayInfo);
+
+      container.innerHTML = ``;
+
+      switch (sortType) {
+        case SortType.PRICE:
+          sortedTripPoints = arrayOfTripPoints.slice().sort((a, b) => b.price - a.price);
+          sortedDays.push({dayInfo: sortedTripPoints});
+          break;
+        case SortType.TIME:
+          sortedTripPoints = arrayOfTripPoints.slice().sort((a, b) => (b.endDate - b.startDate) - (a.endDate - a.startDate));
+          sortedDays.push({dayInfo: sortedTripPoints});
+          break;
+        case SortType.DEFAULT:
+          sortedDays = tripDays;
+      }
+
+      render(container, this._sortingComponent, RenderPosition.AFTERBEGIN);
+
+      sortedDays.forEach((day) => render(container, new TripDayComponent(day), RenderPosition.BEFOREEND));
+
+      const tripsListElements = Array.from(container.querySelectorAll(`.trip-events__list`));
+
+      sortedDays.forEach((day, index) =>
+        day.dayInfo.forEach((data) => {
+          renderTripPoints(tripsListElements[index], data);
+        })
+      );
+    });
+
     render(container, this._sortingComponent, RenderPosition.AFTERBEGIN);
 
-    tripDays.forEach((day) => render(container, new TripDayComponent(day), RenderPosition.BEFOREEND));
+    days.forEach((day) => render(container, new TripDayComponent(day), RenderPosition.BEFOREEND));
 
     const tripsListElements = Array.from(container.querySelectorAll(`.trip-events__list`));
 
-    tripDays.forEach((day, index) =>
+    days.forEach((day, index) =>
       day.dayInfo.forEach((data) => {
         renderTripPoints(tripsListElements[index], data);
       })
