@@ -73,7 +73,7 @@ export const createTripRoute = (number) => {
 const generateDays = (number, pointsPerDay) => (
   new Array(number)
     .fill(``)
-    .map((elem, index) => ({
+    .map((_elem, index) => ({
       day: index + 1,
       dayInfo: createTripRoute(pointsPerDay),
       dayDate: new Date()
