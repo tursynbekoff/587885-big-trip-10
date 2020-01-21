@@ -1,4 +1,5 @@
-import {getMonthName, createElement} from "../utils.js";
+import {getMonthName} from "../utils/common.js";
+import AbstractComponent from './abstract-component.js';
 
 const createCitiesTemplate = (points) => {
   if (points.length <= 2) {
@@ -24,25 +25,14 @@ const createTripInfoTemplate = (days) => {
   );
 };
 
-export default class TripInfo {
+export default class TripInfo extends AbstractComponent {
   constructor(days) {
+    super();
     this._days = days;
-    this._element = null;
   }
 
   getTemplate() {
     return createTripInfoTemplate(this._days);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
 

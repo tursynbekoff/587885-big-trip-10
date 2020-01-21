@@ -1,6 +1,6 @@
-import {createElement, formatTime, getFullDate} from "../utils.js";
+import {formatTime, getFullDate} from "../utils/common.js";
 import {ROUTE_TYPES} from '../const.js';
-
+import AbstractComponent from './abstract-component.js';
 
 const createTypeButtonMarkup = (types, from, to) => {
   return types.slice(from, to).map((type) => {
@@ -153,24 +153,18 @@ const createTripEditTemplate = (tripPoint) => {
 };
 
 
-export default class TripEdit {
+export default class TripEdit extends AbstractComponent {
   constructor(tripPoint) {
+    super();
     this._tripPoint = tripPoint;
-    this._element = null;
   }
 
   getTemplate() {
     return createTripEditTemplate(this._tripPoint);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
+  setSubmitHandler(handler) {
+    this.getElement().querySelector(`form`)
+      .addEventListener(`submit`, handler);
   }
 }
