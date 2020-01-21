@@ -46,8 +46,31 @@ const renderTripPoints = (tripsListElement, tripPoint) => {
   return render(tripsListElement, tripPointComponent.getElement(), RenderPosition.BEFOREEND);
 };
 
-const headerElement = document.querySelector(`.page-header`);
+const renderTripBoard = (tripBoardComponent, tripDays) => {
+  let fullPrice = 0;
+  if (tripDays.length === 0) {
+    render(tripBoardComponent, new NoPointComponent().getElement(), RenderPosition.BEFOREEND);
+    return;
+  }
+  const tripInfoElement = headerElement.querySelector(`.trip-info`);
+  render(tripInfoElement, new TripInfoComponent(tripDays).getElement(), RenderPosition.AFTERBEGIN);
+  render(tripEventsElement, new SortingComponent().getElement(), RenderPosition.AFTERBEGIN);
 
+  tripDays.forEach((day) => render(tripBoardComponent, new TripDayComponent(day).getElement(), RenderPosition.BEFOREEND));
+
+  const tripsListElements = Array.from(tripEventsElement.querySelectorAll(`.trip-events__list`));
+
+  tripDays.forEach((day, index) =>
+    day.dayInfo.forEach((data) => {
+      renderTripPoints(tripsListElements[index], data);
+    })
+  );
+
+  fullPrice = tripDays.flatMap((day) => day.dayInfo).reduce((price, point) => price + point.price, 0);
+  document.querySelector(`.trip-info__cost-value`).textContent = fullPrice;
+};
+
+const headerElement = document.querySelector(`.page-header`);
 const controlElement = headerElement.querySelector(`.trip-controls`);
 
 render(controlElement, new SiteMenuComponent(menu).getElement(), RenderPosition.BEFOREEND);
@@ -56,33 +79,8 @@ render(controlElement, new FilterComponent(filters).getElement(), RenderPosition
 const mainElement = document.querySelector(`.page-main`);
 const tripEventsElement = mainElement.querySelector(`.trip-events`);
 
-render(tripEventsElement, new TripBoardComponent().getElement(), RenderPosition.BEFOREEND);
+const tripBoardComponent = new TripBoardComponent();
+render(tripEventsElement, tripBoardComponent.getElement(), RenderPosition.BEFOREEND);
 
-
-const boardElement = tripEventsElement.querySelector(`.trip-days`);
-
-
-let fullPrice = 0;
-if (days.length === 0) {
-  render(boardElement, new NoPointComponent().getElement(), RenderPosition.BEFOREEND);
-} else {
-  const tripInfoElement = headerElement.querySelector(`.trip-info`);
-  render(tripInfoElement, new TripInfoComponent(days).getElement(), RenderPosition.AFTERBEGIN);
-  render(tripEventsElement, new SortingComponent().getElement(), RenderPosition.AFTERBEGIN);
-
-  days.forEach((day) => render(boardElement, new TripDayComponent(day).getElement(), RenderPosition.BEFOREEND));
-
-
-  const tripsListElements = Array.from(tripEventsElement.querySelectorAll(`.trip-events__list`));
-
-  days.forEach((day, index) =>
-    day.dayInfo.forEach((data) => {
-      renderTripPoints(tripsListElements[index], data);
-    })
-  );
-
-  fullPrice = days.flatMap((day) => day.dayInfo).reduce((price, point) => price + point.price, 0);
-}
-
-document.querySelector(`.trip-info__cost-value`).textContent = fullPrice;
+renderTripBoard(tripBoardComponent.getElement(), days);
 
