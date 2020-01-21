@@ -1,4 +1,4 @@
-import {getRandomArrayItem, getDescriptions, getOffers, getRandomDate} from '../utils.js';
+import {getRandomArrayItem, getDescriptions, getOffers, getRandomDate} from '../utils/common.js';
 import {ROUTE_TYPES} from '../const.js';
 
 // const ROUTE_TYPES = [
