@@ -1,26 +1,32 @@
 import {MONTHS} from "../const.js";
+import moment from 'moment';
 
-export const formatTime = (UTCTimestamp) => {
-  const date = new Date(UTCTimestamp);
-  const hours = date.getHours();
-  const minutes = date.getMinutes();
-  return `${hours < 10 ? `0` + hours : hours}:${minutes < 10 ? `0` + minutes : minutes}`;
+// export const formatTime = (UTCTimestamp) => {
+//   const date = new Date(UTCTimestamp);
+//   const hours = date.getHours();
+//   const minutes = date.getMinutes();
+//   return `${hours < 10 ? `0` + hours : hours}:${minutes < 10 ? `0` + minutes : minutes}`;
+// };
+
+export const formatTime = (date) => {
+  return moment(date).format(`hh:mm`);
 };
 
-export const formatTimeDuration = function (UTCTimestamp) {
-  const date = new Date(UTCTimestamp);
-  const minutes = date.getMinutes();
-  const hours = date.getHours();
-  const days = date.getDay();
-  if (days > 0) {
-    return `${days < 10 ? `0` + days + `D ` : days + `D `}${hours < 10 ? `0` + hours + `H ` : hours + `H `}${minutes < 10 ? `0` + minutes + `M` : minutes + `M`}`;
-  }
-  if (hours > 0) {
-    return `${hours < 10 ? `0` + hours + `H ` : hours + `H `}${minutes < 10 ? `0` + minutes + `M` : minutes + `M`}`;
-  } else {
-    return `${minutes < 10 ? `0` + minutes + `M` : minutes + `M`}`;
-  }
+export const getFullDate = (date) => {
+  return moment(date).format(`DD/MM/YY`);
 };
+
+const setTimeFormat = (value) => {
+  return value < 10 ? `0${value}` : `${value}`;
+};
+
+export const formatTimeDuration = (start, end) => {
+  const days = moment(end - start).get(`days`) >= 1 ? `${setTimeFormat(moment(end - start).get(`days`))}D ` : ``;
+  const hours = moment(end - start).get(`hour`) >= 1 ? `${setTimeFormat(moment(end - start).get(`hour`))}H ` : ``;
+  const minutes = moment(end - start).get(`minutes`) >= 1 ? `${setTimeFormat(moment(end - start).get(`minutes`))}M ` : ``;
+  return `${days} ${hours} ${minutes}`;
+};
+
 
 export const getRandomInteger = (min, max) =>
   min + Math.floor(max * Math.random());
@@ -46,14 +52,14 @@ export const getRandomDate = () => {
 
 export const getMonthName = (date) => MONTHS[date.getMonth()];
 
-export const getFullDate = (UTCTimestamp) => {
-  const date = new Date(UTCTimestamp);
-  const month = date.getMonth() + 1;
-  const day = date.getDate();
-  return `${date.getYear() - 100}/${month < 10 ? `0` + month : month}/${day < 10 ? `0` + day : day}`;
-};
+// export const getFullDate = (UTCTimestamp) => {
+//   const date = new Date(UTCTimestamp);
+//   const month = date.getMonth() + 1;
+//   const day = date.getDate();
+//   return `${date.getYear() - 100}/${month < 10 ? `0` + month : month}/${day < 10 ? `0` + day : day}`;
+// };
 
-export const getHoursAndMinutes = (time) => {
-  const date = new Date(time);
-  return `${date.getHours()}:${date.getMinutes()}`;
-};
+// export const getHoursAndMinutes = (time) => {
+//   const date = new Date(time);
+//   return `${date.getHours()}:${date.getMinutes()}`;
+// };

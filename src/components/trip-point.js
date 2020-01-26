@@ -3,31 +3,32 @@ import {formatTimeDuration, formatTime} from '../utils/common.js';
 import AbstractComponent from './abstract-component.js';
 
 const createOffersTemplate = (offers) => {
-  return offers.map((it) => (
-    `<li class="event__offer">
-            <span class="event__offer-title">${it.name}</span>
-            &plus;
-            &euro;&nbsp;<span class="event__offer-price">${it.cost}</span>
-           </li>`
-  )).join(``);
+  if (offers) {
+    return offers.map((it) => (
+      `<li class="event__offer">
+             <span class="event__offer-title">${it.title}</span>
+              &plus;
+              &euro;&nbsp;<span class="event__offer-price">${it.price}</span>
+            </li>`
+    )).join(``);
+  } else {
+    return ``;
+  }
 };
 
 const createTripPointTemplate = (tripPoint) => {
   const {type, destination, price, offers, startDate, endDate} = tripPoint;
-  const duration = endDate - startDate;
-
 
   let preposition = `to`;
   if ((type === `Check`) || (type === `Sightseeing`) || (type === `Restaurant`)) {
     preposition = `in`;
   }
-
   return `<li class="trip-events__item">
   <div class="event">
     <div class="event__type">
       <img class="event__type-icon" width="42" height="42" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
     </div>
-    <h3 class="event__title">${type} ${preposition} ${destination}</h3>
+    <h3 class="event__title">${type} ${preposition} ${destination.name}</h3>
 
     <div class="event__schedule">
       <p class="event__time">
@@ -35,7 +36,7 @@ const createTripPointTemplate = (tripPoint) => {
         &mdash;
         <time class="event__end-time" datetime="${formatTime(endDate)}">${formatTime(endDate)}</time>
       </p>
-      <p class="event__duration">${formatTimeDuration(duration)}</p>
+      <p class="event__duration">${formatTimeDuration(startDate, endDate)}</p>
     </div>
 
     <p class="event__price">
