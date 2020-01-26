@@ -1,6 +1,7 @@
 import {formatTime, getFullDate} from "../utils/common.js";
 import {ROUTE_TYPES} from '../const.js';
-import AbstractComponent from './abstract-component.js';
+import AbstractSmartComponent from './abstract-smart-component.js';
+import {CITIES} from '../mock/trip-point.js';
 
 const createTypeButtonMarkup = (types, from, to) => {
   return types.slice(from, to).map((type) => {
@@ -12,6 +13,14 @@ const createTypeButtonMarkup = (types, from, to) => {
         value="${lowerType}">
         <label class="event__type-label  event__type-label--${lowerType}" for="event-type-${lowerType}-1">${type}</label>
       </div>`
+    );
+  }).join(`\n`);
+};
+
+const createCitiesMarkup = (cities) => {
+  return cities.map((city) => {
+    return (
+      `<option value=${city}></option>`
     );
   }).join(`\n`);
 };
@@ -38,7 +47,7 @@ const createOffersMarkup = (offers) => {
 
 
 const createTripEditTemplate = (tripPoint) => {
-  const {type, destination, price, offers, startDate, endDate} = tripPoint;
+  const {type, destination, price, offers, startDate, endDate, description} = tripPoint;
 
   let preposition = `to`;
   if ((type === `Check`) || (type === `Sightseeing`) || (type === `Restaurant`)) {
@@ -78,9 +87,7 @@ const createTripEditTemplate = (tripPoint) => {
         </label>
         <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination}" list="destination-list-1">
         <datalist id="destination-list-1">
-          <option value="Amsterdam"></option>
-          <option value="Geneva"></option>
-          <option value="Chamonix"></option>
+          ${createCitiesMarkup(CITIES)}
         </datalist>
       </div>
 
@@ -135,7 +142,7 @@ const createTripEditTemplate = (tripPoint) => {
 
       <section class="event__section  event__section--destination">
         <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-        <p class="event__destination-description">Geneva is a city in Switzerland that lies at the southern tip of expansive Lac Léman (Lake Geneva). Surrounded by the Alps and Jura mountains, the city has views of dramatic Mont Blanc.</p>
+        <p class="event__destination-description">${description}</p>
 
         <div class="event__photos-container">
           <div class="event__photos-tape">
@@ -153,18 +160,51 @@ const createTripEditTemplate = (tripPoint) => {
 };
 
 
-export default class TripEdit extends AbstractComponent {
+export default class TripEdit extends AbstractSmartComponent {
   constructor(tripPoint) {
     super();
     this._tripPoint = tripPoint;
+  }
+
+  recoveryListeners() {
+    this._subscribeOnEvents();
   }
 
   getTemplate() {
     return createTripEditTemplate(this._tripPoint);
   }
 
+  rerender() {
+    super.rerender();
+  }
+
+  reset() {
+    // const tripPoint = this._tripPoint;
+
+    this.rerender();
+  }
+
+  _subscribeOnEvents() {
+
+  }
+
   setSubmitHandler(handler) {
     this.getElement().querySelector(`form`)
       .addEventListener(`submit`, handler);
+  }
+
+  setFavoritesButtonClickHandler(handler) {
+    this.getElement().querySelector(`.event__favorite-checkbox`)
+      .addEventListener(`click`, handler);
+  }
+
+  setTypeChangeHandler(handler) {
+    this.getElement().querySelector(`.event__type-list`)
+    .addEventListener(`change`, handler);
+  }
+
+  setCityChangeHandler(handler) {
+    this.getElement().querySelector(`.event__input--destination`)
+    .addEventListener(`blur`, handler);
   }
 }
