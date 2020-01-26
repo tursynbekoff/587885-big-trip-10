@@ -89,7 +89,7 @@ export default class BoardController {
 
     this._days[indexDay].dayInfo[indexPoint] = newData;
 
-    pointController.render(this._days[indexDay].dayInfo[indexPoint]);
+    pointController.render(newData);
   }
 
   _onViewChange() {

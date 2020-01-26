@@ -5,14 +5,14 @@ const createCitiesTemplate = (points) => {
   if (points.length <= 2) {
     return points.map(({destination}) => destination).join(` — `);
   } else {
-    return `${points[0].destination} — ... —  ${points[points.length - 1].destination}`;
+    return `${points[0].destination.name} — ... —  ${points[points.length - 1].destination.name}`;
   }
 };
 
 const getTripDates = (data) => {
   const lastIndex = data.length - 1;
   const dayDate = data[lastIndex].dayDate;
-  return `${getMonthName(data[0].dayDate)} ${data[0].dayDate.getDate()}&nbsp;—&nbsp;${dayDate.getDate() + lastIndex}`;
+  return `${getMonthName(data[0].dayDate)} ${data[0].dayDate.getDate()}&nbsp;—&nbsp;${dayDate.getDate()}`;
 };
 
 const createTripInfoTemplate = (days) => {

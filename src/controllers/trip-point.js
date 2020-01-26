@@ -1,8 +1,8 @@
 import TripPointComponent from '../components/trip-point.js';
 import TripEditComponent from '../components/trip-edit.js';
 import {RenderPosition, render, replace} from '../utils/render.js';
-import {getOffers, getDescriptions} from '../utils/common.js';
-import {OFFERS, DESCRIPTIONS} from '../mock/trip-point.js';
+// import {getOffers, getDescriptions} from '../utils/common.js';
+// import {OFFERS, DESCRIPTIONS} from '../mock/trip-point.js';
 
 const Mode = {
   DEFAULT: `default`,
@@ -27,45 +27,47 @@ export default class PointController {
     const oldPointComponent = this._pointComponent;
     const oldPointEditComponent = this._pointEditComponent;
 
-    this._pointComponent = new TripPointComponent(tripPoint);
+    if (this._mode !== Mode.EDIT) {
+      this._createPointComponent(tripPoint);
+
+      if (oldPointComponent) {
+        replace(this._pointComponent, oldPointComponent);
+      } else {
+        render(this._container, this._pointComponent, RenderPosition.BEFOREEND);
+      }
+    }
+
     this._pointEditComponent = new TripEditComponent(tripPoint);
 
+    // this._pointEditComponent.setFavoritesButtonClickHandler(() => {
+    //   this._onDataChange(this, tripPoint, Object.assign({}, tripPoint, {
+    //     isFavorite: !tripPoint.isFavorite,
+    //   }));
+    // });
 
-    this._pointComponent.setEditButtonHandler(() => {
-      this._replacePointToEdit();
-      document.addEventListener(`keydown`, this._onEscKeyDown);
-    });
+    // this._pointEditComponent.setTypeChangeHandler((evt) => {
+    //   this._onDataChange(this, tripPoint, Object.assign({}, tripPoint, {
+    //     type: (evt.target.value).charAt(0).toUpperCase() + (evt.target.value).slice(1),
+    //     offers: getOffers(OFFERS),
+    //   }));
+    // });
 
-    this._pointEditComponent.setFavoritesButtonClickHandler(() => {
-      this._onDataChange(this, tripPoint, Object.assign({}, tripPoint, {
-        isFavorite: !tripPoint.isFavorite,
-      }));
-    });
+    // this._pointEditComponent.setCityChangeHandler((evt) => {
+    //   this._onDataChange(this, tripPoint, Object.assign({}, tripPoint, {
+    //     destination: (evt.target.value).charAt(0).toUpperCase() + (evt.target.value).slice(1),
+    //     description: getDescriptions(DESCRIPTIONS),
+    //   }));
+    // });
 
-    this._pointEditComponent.setTypeChangeHandler((evt) => {
-      this._onDataChange(this, tripPoint, Object.assign({}, tripPoint, {
-        type: (evt.target.value).charAt(0).toUpperCase() + (evt.target.value).slice(1),
-        offers: getOffers(OFFERS),
-      }));
-    });
-
-    this._pointEditComponent.setCityChangeHandler((evt) => {
-      this._onDataChange(this, tripPoint, Object.assign({}, tripPoint, {
-        destination: (evt.target.value).charAt(0).toUpperCase() + (evt.target.value).slice(1),
-        description: getDescriptions(DESCRIPTIONS),
-      }));
-    });
-
-    this._pointEditComponent.setSubmitHandler((evt) => {
-      evt.preventDefault();
+    this._pointEditComponent.setSubmitHandler(() => {
+      // debugger;
+      // evt.preventDefault();
+      this._createPointComponent(tripPoint);
       this._replaceEditToPoint();
     });
 
-    if (oldPointComponent && oldPointEditComponent) {
-      replace(this._pointComponent, oldPointComponent);
+    if (oldPointEditComponent) {
       replace(this._pointEditComponent, oldPointEditComponent);
-    } else {
-      render(this._container, this._pointComponent, RenderPosition.BEFOREEND);
     }
   }
 
@@ -73,6 +75,15 @@ export default class PointController {
     if (this._mode !== Mode.DEFAULT) {
       this._replaceEditToPoint();
     }
+  }
+
+  _createPointComponent(tripPoint) {
+    this._pointComponent = new TripPointComponent(tripPoint);
+
+    this._pointComponent.setEditButtonHandler(() => {
+      this._replacePointToEdit();
+      document.addEventListener(`keydown`, this._onEscKeyDown);
+    });
   }
 
   _replaceEditToPoint() {
