@@ -14,24 +14,24 @@ import {ROUTE_TYPES} from '../const.js';
 //   `Transport`,
 // ];
 
-const CITIES = [
+export const CITIES = [
   `London`,
   `Berlin`,
-  `New Mexico`,
+  `New-Mexico`,
   `Rome`,
   `Vienna`,
   `Budapest`,
   `Prague`,
 ];
 
-const DESCRIPTIONS = [
+export const DESCRIPTIONS = [
   `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras aliquet varius magna, non porta ligula feugiat eget. Fusce tristique felis at fermentum pharetra.`,
   `Aliquam id orci ut lectus varius viverra. Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante. Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum.`,
   `Aliquam id orci ut lectus varius viverra. Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante. Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum.`,
   `Aliquam erat volutpat. Nunc fermentum tortor ac porta dapibus. In rutrum ac purus sit amet tempus.`,
 ];
 
-const OFFERS = [
+export const OFFERS = [
   {type: `Check-In`, name: `Add luggage`, cost: 10, isChecked: false},
   {type: `Flight`, name: `Switch to comfort class`, cost: 150, isChecked: false},
   {type: `Restaurant`, name: `Add meal`, cost: `2`, isChecked: false},
@@ -63,6 +63,7 @@ const createTripPoint = () => {
     offers: getOffers(OFFERS),
     startDate,
     endDate,
+    isFavorite: Math.random() > 0.5,
   };
 };
 
