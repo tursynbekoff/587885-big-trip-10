@@ -5,7 +5,7 @@ const createBoardTripTemplate = () => {
   </ul>`;
 };
 
-export default class Board extends AbstractComponent {
+export default class DaysBoard extends AbstractComponent {
   getTemplate() {
     return createBoardTripTemplate();
   }

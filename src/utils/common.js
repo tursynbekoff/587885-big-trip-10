@@ -1,15 +1,8 @@
 import {MONTHS} from "../const.js";
 import moment from 'moment';
 
-// export const formatTime = (UTCTimestamp) => {
-//   const date = new Date(UTCTimestamp);
-//   const hours = date.getHours();
-//   const minutes = date.getMinutes();
-//   return `${hours < 10 ? `0` + hours : hours}:${minutes < 10 ? `0` + minutes : minutes}`;
-// };
-
 export const formatTime = (date) => {
-  return moment(date).format(`hh:mm`);
+  return moment(date).format(`HH:mm`);
 };
 
 export const getFullDate = (date) => {
@@ -20,11 +13,14 @@ const setTimeFormat = (value) => {
   return value < 10 ? `0${value}` : `${value}`;
 };
 
-export const formatTimeDuration = (start, end) => {
-  const days = moment(end - start).get(`days`) >= 1 ? `${setTimeFormat(moment(end - start).get(`days`))}D ` : ``;
-  const hours = moment(end - start).get(`hour`) >= 1 ? `${setTimeFormat(moment(end - start).get(`hour`))}H ` : ``;
-  const minutes = moment(end - start).get(`minutes`) >= 1 ? `${setTimeFormat(moment(end - start).get(`minutes`))}M ` : ``;
-  return `${days} ${hours} ${minutes}`;
+export const formatTimeDuration = (duration) => {
+  const daysNotFormat = moment.duration(duration).days();
+  const days = daysNotFormat >= 1 ? `${setTimeFormat(daysNotFormat)}D ` : ``;
+  const hoursNotFormat = moment.duration(duration).hours();
+  const hours = hoursNotFormat >= 1 || daysNotFormat >= 1 ? `${setTimeFormat(hoursNotFormat)}H ` : ``;
+  const minutesNotFormat = moment.duration(duration).minutes();
+  const minutes = `${setTimeFormat(minutesNotFormat)}M`;
+  return days + hours + minutes;
 };
 
 
@@ -46,20 +42,8 @@ export const getRandomDate = () => {
   return (
     Date.now() +
     1 +
-    Math.floor(Math.random() * 24 * 60 * 60 * 1000)
+    Math.floor(Math.random() * 24 * 60 * 60 * 1000 * 7) - Math.floor(Math.random() * 24 * 60 * 60 * 1000 * 5)
   );
 };
 
 export const getMonthName = (date) => MONTHS[date.getMonth()];
-
-// export const getFullDate = (UTCTimestamp) => {
-//   const date = new Date(UTCTimestamp);
-//   const month = date.getMonth() + 1;
-//   const day = date.getDate();
-//   return `${date.getYear() - 100}/${month < 10 ? `0` + month : month}/${day < 10 ? `0` + day : day}`;
-// };
-
-// export const getHoursAndMinutes = (time) => {
-//   const date = new Date(time);
-//   return `${date.getHours()}:${date.getMinutes()}`;
-// };
