@@ -18,13 +18,30 @@ const getTripDates = (points) => {
   return `${moment(new Date(sortedPoints[0].startDate)).format(`MMM DD`)} — ${moment(new Date(sortedPoints[sortedPoints.length - 1].startDate)).format(`MMM DD`)}`;
 };
 
+
+const createCostTemplate = (points) => {
+  let fullPrice = 0;
+  if (points.length !== 0) {
+    fullPrice = points.reduce((price, point) => price + point.price, 0);
+    // document.querySelector(`.trip-info__cost-value`).textContent = fullPrice;
+  }
+  return fullPrice;
+};
+
+
 const createTripInfoTemplate = (points) => {
-  const citiesTemplate = createCitiesTemplate(points);
   return (
-    `<div class="trip-info__main">
-    <h1 class="trip-info__title">${citiesTemplate}</h1>
-    <p class="trip-info__dates">${getTripDates(points)}</p>
-    </div>`
+    `<section class="trip-main__trip-info  trip-info">
+            <div class="trip-info__main">
+              <h1 class="trip-info__title">${createCitiesTemplate(points)}</h1>
+
+              <p class="trip-info__dates">${getTripDates(points)}</p>
+            </div>
+
+            <p class="trip-info__cost">
+              Total: &euro;&nbsp;<span class="trip-info__cost-value">${createCostTemplate(points)}</span>
+            </p>
+          </section>`
   );
 };
 

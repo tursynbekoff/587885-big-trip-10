@@ -40,8 +40,4 @@ buttonAddPoint.addEventListener(`click`, () => {
   boardController.createPoint();
 });
 
-let fullPrice = 0;
-if (points.length !== 0) {
-  fullPrice = points.reduce((price, point) => price + point.price, 0);
-  document.querySelector(`.trip-info__cost-value`).textContent = fullPrice;
-}
+
