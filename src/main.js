@@ -1,42 +1,47 @@
-import FilterComponent from './components/filter.js';
+// import FilterComponent from './components/filter.js';
+import FilterController from './controllers/filter.js';
 import SiteMenuComponent from './components/menu.js';
-// import TripInfoComponent from './components/trip-info';
-// import SortingComponent from './components/sorting.js';
-import TripBoardComponent from './components/trip-board.js';
+// import DayBoardComponent from './components/day-board.js/index.js';
+import PointsModel from './models/points.js';
 import BoardController from './controllers/trip-board.js';
-// import TripInfoController from './controllers/trip-info.js';
-// import TripPointComponent from './components/trip-point.js';
-// import NoPointComponent from './components/no-trip-point.js';
-// import TripEditComponent from './components/trip-edit.js';
-// import TripDayComponent from './components/trip-days';
 import {RenderPosition, render} from './utils/render.js';
 import TripInfoComponent from './components/trip-info';
-
-import {filters} from './mock/filter';
+// import {filters} from './mock/filter';
 import {menu} from './mock/menu';
-import {days} from './mock/trip-point';
+import {createTripPoints} from './mock/trip-point';
 // const days = [];
+const POINTS_NUMBER = 10;
+const points = createTripPoints(POINTS_NUMBER);
+const pointsModel = new PointsModel();
+pointsModel.setPoints(points);
+pointsModel.setDays();
+
 
 const headerElement = document.querySelector(`.page-header`);
 const controlElement = headerElement.querySelector(`.trip-controls`);
 
 render(controlElement, new SiteMenuComponent(menu), RenderPosition.BEFOREEND);
-render(controlElement, new FilterComponent(filters), RenderPosition.BEFOREEND);
+const filterController = new FilterController(controlElement, pointsModel);
+filterController.render();
+// render(controlElement, new FilterComponent(filters), RenderPosition.BEFOREEND);
 
-const mainElement = document.querySelector(`.page-main`);
-const tripEventsElement = mainElement.querySelector(`.trip-events`);
+const pageMainElement = document.querySelector(`.page-main`);
+const tripMainElement = document.querySelector(`.trip-main`);
 
 const tripInfoElement = headerElement.querySelector(`.trip-info`);
-render(tripInfoElement, new TripInfoComponent(days), RenderPosition.AFTERBEGIN);
+render(tripInfoElement, new TripInfoComponent(points), RenderPosition.AFTERBEGIN);
 
-const tripBoardComponent = new TripBoardComponent();
-render(tripEventsElement, tripBoardComponent, RenderPosition.BEFOREEND);
+const tripBoard = pageMainElement.querySelector(`.trip-events`);
+const boardController = new BoardController(tripBoard, pointsModel);
+boardController.render();
 
-const boardController = new BoardController(tripBoardComponent);
-boardController.render(days);
+const buttonAddPoint = tripMainElement.querySelector(`.trip-main__event-add-btn`);
+buttonAddPoint.addEventListener(`click`, () => {
+  boardController.createPoint();
+});
 
 let fullPrice = 0;
-if (days.length !== 0) {
-  fullPrice = days.flatMap((day) => day.dayInfo).reduce((price, point) => price + point.price, 0);
+if (points.length !== 0) {
+  fullPrice = points.reduce((price, point) => price + point.price, 0);
   document.querySelector(`.trip-info__cost-value`).textContent = fullPrice;
 }

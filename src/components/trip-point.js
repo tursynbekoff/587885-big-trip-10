@@ -17,7 +17,7 @@ const createOffersTemplate = (offers) => {
 };
 
 const createTripPointTemplate = (tripPoint) => {
-  const {type, destination, price, offers, startDate, endDate} = tripPoint;
+  const {type, destination, price, offers, startDate, endDate, duration} = tripPoint;
 
   let preposition = `to`;
   if ((type === `Check`) || (type === `Sightseeing`) || (type === `Restaurant`)) {
@@ -36,7 +36,7 @@ const createTripPointTemplate = (tripPoint) => {
         &mdash;
         <time class="event__end-time" datetime="${formatTime(endDate)}">${formatTime(endDate)}</time>
       </p>
-      <p class="event__duration">${formatTimeDuration(startDate, endDate)}</p>
+      <p class="event__duration">${formatTimeDuration(duration)}</p>
     </div>
 
     <p class="event__price">

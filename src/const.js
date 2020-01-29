@@ -26,9 +26,14 @@ export const ROUTE_TYPES = [
   `Transport`,
 ];
 
-// export const OFFERS = [
-//   {type: `Check-In`, name: `Add luggage`, cost: 10},
-//   {type: `Flight`, name: `Switch to comfort class`, cost: 150},
-//   {type: `Restaurant`, name: `Add meal`, cost: `2`},
-//   {type: `Train`, name: `Choose seats`, cost: `9`},
-// ];
+export const FilterType = {
+  EVERYTHING: `everything`,
+  FUTURE: `future`,
+  PAST: `past`,
+};
+
+export const SortingType = {
+  EVENT: `event`,
+  TIME: `time`,
+  PRICE: `price`,
+};

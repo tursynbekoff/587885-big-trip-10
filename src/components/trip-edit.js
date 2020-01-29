@@ -3,15 +3,16 @@ import {ROUTE_TYPES} from '../const.js';
 import AbstractSmartComponent from './abstract-smart-component.js';
 import {CITIES, DESTINATIONS, getOffers, OFFERS} from '../mock/trip-point.js';
 import flatpickr from 'flatpickr';
+import moment from 'moment';
 
-const createTypeButtonMarkup = (types, from, to) => {
+const createTypeButtonMarkup = (types, from, to, tripPoint) => {
   return types.slice(from, to).map((type) => {
     const lowerType = type.toLowerCase();
     return (
       `<div class="event__type-item">
         <input
         id="event-type-${lowerType}-1" class="event__type-input  visually-hidden" type="radio" name="event-type"
-        value="${lowerType}">
+        value="${lowerType}" ${tripPoint.type.toLowerCase() === type.toLowerCase() ? `checked` : ``}>
         <label class="event__type-label  event__type-label--${lowerType}" for="event-type-${lowerType}-1">${type}</label>
       </div>`
     );
@@ -27,15 +28,19 @@ const createCitiesMarkup = (cities) => {
 };
 
 const createImagesMarkup = (pictures) => {
-  return pictures.map((picture) => {
-    return (
-      `<img class="event__photo" src="${picture.src}" alt="Event photo"></img>`
-    );
-  }).join(`\n`);
+  if (pictures) {
+    return pictures.map((picture) => {
+      return (
+        `<img class="event__photo" src="${picture.src}" alt="Event photo"></img>`
+      );
+    }).join(`\n`);
+  } else {
+    return ``;
+  }
+
 };
 
 const createOffersMarkup = (offers, type) => {
-  // debugger;
   if (offers) {
     return offers.map((offer, index) => {
       const {title, price, isChecked} = offer;
@@ -61,20 +66,19 @@ const createOffersMarkup = (offers, type) => {
 };
 
 const createTripEditTemplate = (tripPoint) => {
-  // debugger;
-  const {type, destination, price, offers, startDate, endDate, isFavorite} = tripPoint;
 
+  const {type, destination, price, offers, startDate, endDate, isFavorite} = tripPoint;
   let preposition = `to`;
   if ((type === `Check`) || (type === `Sightseeing`) || (type === `Restaurant`)) {
     preposition = `in`;
   }
-  const typeTransferMarkup = createTypeButtonMarkup(ROUTE_TYPES, 3, 9);
-  const typeActivityMarkup = createTypeButtonMarkup(ROUTE_TYPES, 0, 3);
+  const typeTransferMarkup = createTypeButtonMarkup(ROUTE_TYPES, 3, 9, tripPoint);
+  const typeActivityMarkup = createTypeButtonMarkup(ROUTE_TYPES, 0, 3, tripPoint);
   const offersMarkup = createOffersMarkup(offers, type);
 
 
-  return `<li class="trip-events__item">
-  <form class="event  event--edit" action="#" method="get">
+  return (
+    `<form class="event  event--edit" action="#" method="get">
     <header class="event__header">
       <div class="event__type-wrapper">
         <label class="event__type  event__type-btn" for="event-type-toggle-1">
@@ -167,17 +171,27 @@ const createTripEditTemplate = (tripPoint) => {
       </section>
     </section>
   </form>
-</li>`;
+`);
 };
 
-// const parseFormData = (formData) => {
-//   return {
-//     type: formData.get(`event-type`),
-//     city: formData.get(`event-destination`),
-//     price: formData.get(`event-price`),
-//     isFavorite: formData.get(`event-favorite`),
-//   };
-// };
+DESTINATIONS.find((it) => it.name === name);
+
+const parseFormData = (formData) => {
+  const startDate = moment(formData.get(`event-start-time`), `DD/MM/YY HH:mm`).unix() * 1000;
+  const endDate = moment(formData.get(`event-end-time`), `DD/MM/YY HH:mm`).unix() * 1000;
+  const destination = DESTINATIONS.find((it) => it.name === formData.get(`event-destination`));
+  const type = formData.get(`event-type`).charAt(0).toUpperCase() + formData.get(`event-type`).slice(1);
+  return {
+    type,
+    destination, // .charAt(0).toUpperCase() + formData.get(`event-destination`).slice(1), // charAt(0).toUpperCase() + name.slice(1)
+    offers: formData.getAll(`event-offers`),
+    price: formData.get(`event-price`),
+    startDate,
+    endDate,
+    isFavorite: formData.get(`event-favorite`),
+    duration: endDate - startDate,
+  };
+};
 
 export default class TripEdit extends AbstractSmartComponent {
   constructor(tripPoint) {
@@ -187,16 +201,24 @@ export default class TripEdit extends AbstractSmartComponent {
     this._flatpickr = null;
     this._applyFlatpickr();
     this._subscribeOnEvents();
+    this._deleteButtonClickHandler = null;
+    this._submitHandler = null;
 
-    // this._isFavorite = tripPoint.isFavorite;
-    // this._type = tripPoint.type;
-    // this._offers = tripPoint.offers;
-    // this._destination = tripPoint.destination;
+  }
+
+  removeElement() {
+    if (this._flatpickr) {
+      this._flatpickr.destroy();
+      this._flatpickr = null;
+    }
+
+    super.removeElement();
   }
 
   recoveryListeners() {
+    this.setSubmitHandler(this._submitHandler);
+    this.setDeleteButtonClickHandler(this._deleteButtonClickHandler);
     this._subscribeOnEvents();
-
   }
 
   getTemplate() {
@@ -212,6 +234,13 @@ export default class TripEdit extends AbstractSmartComponent {
   reset() {
     // const tripPoint = this._tripPoint;
     this.rerender();
+  }
+
+  getData() {
+    const form = this.getElement();
+    const formData = new FormData(form);
+
+    return parseFormData(formData);
   }
 
   _subscribeOnEvents() {
@@ -268,14 +297,24 @@ export default class TripEdit extends AbstractSmartComponent {
       altInout: true,
       altFormat: `d/m/y H:i`,
       dateFormat: `d/m/y H:i`,
+      // eslint-disable-next-line camelcase
       time_24hr: true,
       defaultDate: this._tripPoint[dateType] === null ? new Date() : this._tripPoint[dateType],
     });
   }
 
   setSubmitHandler(handler) {
-    this.getElement().querySelector(`form`)
-      .addEventListener(`submit`, handler);
+    this.getElement().addEventListener(`submit`, handler);
+
+    this._submitHandler = handler;
+  }
+
+  setDeleteButtonClickHandler(handler) {
+    this.getElement().querySelector(`.event__reset-btn`)
+      .addEventListener(`click`, handler);
+    // debugger;
+
+    this._deleteButtonClickHandler = handler;
   }
 
   // _setFavoritesButtonClickHandler(handler) {
