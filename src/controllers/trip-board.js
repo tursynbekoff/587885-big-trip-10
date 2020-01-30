@@ -66,7 +66,7 @@ export default class BoardController {
     // this._noPointComponent = new NoPointComponent();
     this._sortingComponent = new SortingComponent();
     this._tripInfoComponent = new TripInfoComponent();
-    this._DayBoardComponent = new DayBoardComponent();
+    this._dayBoardComponent = new DayBoardComponent();
     this._creatingPoint = null;
 
     this._showedPointControllers = [];
@@ -81,6 +81,16 @@ export default class BoardController {
     this._pointsModel.setFilterChangeHandler(this._onFilterChange);
   }
 
+  hide() {
+    this._sortingComponent.hide();
+    this._dayBoardComponent.hide();
+  }
+
+  show() {
+    this._sortingComponent.show();
+    this._dayBoardComponent.show();
+  }
+
   render() {
     const container = this._container;
     const points = this._pointsModel.getPoints();
@@ -88,8 +98,8 @@ export default class BoardController {
 
     renderSort(container, this._sortingComponent, points);
 
-    render(container, this._DayBoardComponent, RenderPosition.BEFOREEND);
-    this._showedPointControllers = renderDays(this._DayBoardComponent.getElement(), days, points, this._onDataChange, this._onViewChange);
+    render(container, this._dayBoardComponent, RenderPosition.BEFOREEND);
+    this._showedPointControllers = renderDays(this._dayBoardComponent.getElement(), days, points, this._onDataChange, this._onViewChange);
   }
 
   createPoint() {
@@ -97,7 +107,7 @@ export default class BoardController {
       return;
     }
 
-    this._creatingPoint = new PointController(this._DayBoardComponent.getElement(), this._onDataChange, this._onViewChange);
+    this._creatingPoint = new PointController(this._dayBoardComponent.getElement(), this._onDataChange, this._onViewChange);
     this._emptyPoint = getEmptyPoint(this._pointsModel.getDays()[0] || Date.now());
 
     this._creatingPoint.render(this._emptyPoint, TripControllerMode.ADDING);
@@ -108,12 +118,12 @@ export default class BoardController {
   _removePoints() {
     this._showedPointControllers.forEach((pointController) => pointController.destroy());
     this._showedPointControllers = [];
-    this._DayBoardComponent.getElement().innerHTML = ``;
+    this._dayBoardComponent.getElement().innerHTML = ``;
   }
 
   _renderPoints(points, days) {
     // renderSort(this._container, this._sortingComponent, points);x
-    const newPoints = renderDays(this._DayBoardComponent.getElement(), days, points, this._onDataChange, this._onViewChange);
+    const newPoints = renderDays(this._dayBoardComponent.getElement(), days, points, this._onDataChange, this._onViewChange);
     this._showedPointControllers = this._showedPointControllers.concat(newPoints);
   }
 
@@ -130,7 +140,7 @@ export default class BoardController {
 
     // let arrayOfTripPoints = this._days.flatMap((day) => day.dayInfo);
     // debugger;
-    this._DayBoardComponent.getElement().innerHTML = ``;
+    this._dayBoardComponent.getElement().innerHTML = ``;
 
     switch (sortType) {
       case SortType.PRICE:
@@ -149,7 +159,7 @@ export default class BoardController {
 
     }
     renderSort(this._container, this._sortingComponent, sortedPoints);
-    this._showedPointControllers = renderDays(this._DayBoardComponent.getElement(), sortedDays, sortedPoints, this._onDataChange, this._onViewChange);
+    this._showedPointControllers = renderDays(this._dayBoardComponent.getElement(), sortedDays, sortedPoints, this._onDataChange, this._onViewChange);
   }
 
   _onDataChange(pointController, oldData, newData) {
@@ -165,24 +175,24 @@ export default class BoardController {
         const destroyedPoint = this._showedPointControllers.pop();
         destroyedPoint.destroy();
         this._showedPointControllers = [].concat(pointController, this._showedPointControllers);
-        this._DayBoardComponent.getElement().innerHTML = ``;
+        this._dayBoardComponent.getElement().innerHTML = ``;
         // renderSort(this._container, this._sortingComponent, this._pointsModel.getPoints());
-        renderDays(this._DayBoardComponent.getElement(), this._pointsModel.getDays(), this._pointsModel.getPoints(), this._onDataChange, this._onViewChange);
+        renderDays(this._dayBoardComponent.getElement(), this._pointsModel.getDays(), this._pointsModel.getPoints(), this._onDataChange, this._onViewChange);
       }
     } else if (newData === null) {
       this._pointsModel.removePoint(oldData.id);
-      this._DayBoardComponent.getElement().innerHTML = ``;
+      this._dayBoardComponent.getElement().innerHTML = ``;
       // renderSort(this._container, this._sortingComponent, this._pointsModel.getPoints());
-      renderDays(this._DayBoardComponent.getElement(), this._pointsModel.getDays(), this._pointsModel.getPoints(), this._onDataChange, this._onViewChange);
+      renderDays(this._dayBoardComponent.getElement(), this._pointsModel.getDays(), this._pointsModel.getPoints(), this._onDataChange, this._onViewChange);
     } else {
       const isSuccess = this._pointsModel.updatePoint(oldData.id, newData);
       if (isSuccess) {
         if (getFullDate(oldData.startDate) === getFullDate(newData.startDate)) {
           pointController.render(newData, TripControllerMode.DEFAULT);
         } else {
-          this._DayBoardComponent.getElement().innerHTML = ``;
+          this._dayBoardComponent.getElement().innerHTML = ``;
           renderSort(this._container, this._sortingComponent, this._pointsModel.getPoints());
-          renderDays(this._DayBoardComponent.getElement(), this._pointsModel.getDays(), this._pointsModel.getPoints(), this._onDataChange, this._onViewChange);
+          renderDays(this._dayBoardComponent.getElement(), this._pointsModel.getDays(), this._pointsModel.getPoints(), this._onDataChange, this._onViewChange);
         }
       }
     }

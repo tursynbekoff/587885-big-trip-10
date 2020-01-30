@@ -185,7 +185,7 @@ const parseFormData = (formData) => {
     type,
     destination, // .charAt(0).toUpperCase() + formData.get(`event-destination`).slice(1), // charAt(0).toUpperCase() + name.slice(1)
     offers: formData.getAll(`event-offers`),
-    price: formData.get(`event-price`),
+    price: parseInt(formData.get(`event-price`), 10),
     startDate,
     endDate,
     isFavorite: formData.get(`event-favorite`),
