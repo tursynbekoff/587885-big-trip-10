@@ -1,26 +1,27 @@
-// import FilterComponent from './components/filter.js';
 import FilterController from './controllers/filter.js';
-import SiteMenuComponent from './components/menu.js';
-// import DayBoardComponent from './components/day-board.js/index.js';
+import SiteMenuComponent, {MenuItem} from './components/menu.js';
+import StatsComponent from './components/stats.js';
 import PointsModel from './models/points.js';
 import BoardController from './controllers/trip-board.js';
 import {RenderPosition, render} from './utils/render.js';
 import TripInfoComponent from './components/trip-info';
-// import {filters} from './mock/filter';
-import {menu} from './mock/menu';
 import {createTripPoints} from './mock/trip-point';
-// const days = [];
+
+
 const POINTS_NUMBER = 10;
 const points = createTripPoints(POINTS_NUMBER);
 const pointsModel = new PointsModel();
 pointsModel.setPoints(points);
 pointsModel.setDays();
 
+const statsComponent = new StatsComponent(pointsModel);
+
 
 const headerElement = document.querySelector(`.page-header`);
 const controlElement = headerElement.querySelector(`.trip-controls`);
 
-render(controlElement, new SiteMenuComponent(menu), RenderPosition.BEFOREEND);
+const siteMenuComponent = new SiteMenuComponent();
+render(controlElement, siteMenuComponent, RenderPosition.BEFOREEND);
 const filterController = new FilterController(controlElement, pointsModel);
 filterController.render();
 // render(controlElement, new FilterComponent(filters), RenderPosition.BEFOREEND);
@@ -33,15 +34,31 @@ render(tripInfoElement, new TripInfoComponent(points), RenderPosition.AFTERBEGIN
 
 const tripBoard = pageMainElement.querySelector(`.trip-events`);
 const boardController = new BoardController(tripBoard, pointsModel);
+statsComponent.hide();
 boardController.render();
+render(tripBoard, statsComponent, RenderPosition.BEFOREEND);
 
 const buttonAddPoint = tripMainElement.querySelector(`.trip-main__event-add-btn`);
 buttonAddPoint.addEventListener(`click`, () => {
+  siteMenuComponent.setActiveItem(MenuItem.TABLE);
+  statsComponent.hide();
+  boardController.show();
   boardController.createPoint();
+  // statsComponent.rerender();
 });
 
-let fullPrice = 0;
-if (points.length !== 0) {
-  fullPrice = points.reduce((price, point) => price + point.price, 0);
-  document.querySelector(`.trip-info__cost-value`).textContent = fullPrice;
-}
+siteMenuComponent.setClickHandler((menuItem) => {
+  switch (menuItem) {
+    case MenuItem.TABLE:
+      boardController.show();
+      statsComponent.hide();
+      siteMenuComponent.setActiveItem(MenuItem.TABLE);
+      break;
+    case MenuItem.STATS:
+      boardController.hide();
+      statsComponent.show();
+      siteMenuComponent.setActiveItem(MenuItem.STATS);
+      break;
+  }
+});
+

@@ -23,7 +23,6 @@ export const ROUTE_TYPES = [
   `Ship`,
   `Taxi`,
   `Train`,
-  `Transport`,
 ];
 
 export const FilterType = {
