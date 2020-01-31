@@ -8,7 +8,7 @@ import TripInfoComponent from './components/trip-info';
 import {createTripPoints} from './mock/trip-point';
 
 
-const POINTS_NUMBER = 10;
+const POINTS_NUMBER = 1;
 const points = createTripPoints(POINTS_NUMBER);
 const pointsModel = new PointsModel();
 pointsModel.setPoints(points);
@@ -30,10 +30,11 @@ const pageMainElement = document.querySelector(`.page-main`);
 const tripMainElement = document.querySelector(`.trip-main`);
 
 const tripInfoElement = headerElement.querySelector(`.trip-info`);
-render(tripInfoElement, new TripInfoComponent(points), RenderPosition.AFTERBEGIN);
+const tripInfoComponent = new TripInfoComponent(pointsModel);
+render(tripInfoElement, tripInfoComponent, RenderPosition.AFTERBEGIN);
 
 const tripBoard = pageMainElement.querySelector(`.trip-events`);
-const boardController = new BoardController(tripBoard, pointsModel);
+const boardController = new BoardController(tripBoard, pointsModel, tripInfoComponent);
 statsComponent.hide();
 boardController.render();
 render(tripBoard, statsComponent, RenderPosition.BEFOREEND);
@@ -44,7 +45,6 @@ buttonAddPoint.addEventListener(`click`, () => {
   statsComponent.hide();
   boardController.show();
   boardController.createPoint();
-  // statsComponent.rerender();
 });
 
 siteMenuComponent.setClickHandler((menuItem) => {

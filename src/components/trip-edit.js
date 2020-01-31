@@ -1,9 +1,18 @@
-import {formatTime, getFullDate} from "../utils/common.js";
+import {formatTime, getFullDate, getOffers, getTimeFromForm} from "../utils/common.js";
 import {ROUTE_TYPES} from '../const.js';
 import AbstractSmartComponent from './abstract-smart-component.js';
-import {CITIES, DESTINATIONS, getOffers, OFFERS} from '../mock/trip-point.js';
+import {CITIES, DESTINATIONS, OFFERS} from '../mock/trip-point.js';
 import flatpickr from 'flatpickr';
-import moment from 'moment';
+
+const isAllowedDestination = (destination) => {
+  const isDestinationFromList = CITIES.includes(destination);
+  return isDestinationFromList;
+};
+
+const isAllowedPriceValue = (price) => {
+  const isPriceNumber = isFinite(price);
+  return isPriceNumber;
+};
 
 const createTypeButtonMarkup = (types, from, to, tripPoint) => {
   return types.slice(from, to).map((type) => {
@@ -27,6 +36,26 @@ const createCitiesMarkup = (cities) => {
   }).join(`\n`);
 };
 
+const createDescriptionSection = (destination) => {
+  // debugger;
+  if (destination.description) {
+    return (
+      `<section class="event__section  event__section--destination">
+      <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+      <p class="event__destination-description">${destination.description}</p>
+
+      <div class="event__photos-container">
+        <div class="event__photos-tape">
+          ${createImagesMarkup(destination.pictures)}
+        </div>
+      </div>
+    </section>`
+    );
+  } else {
+    return ``;
+  }
+};
+
 const createImagesMarkup = (pictures) => {
   if (pictures) {
     return pictures.map((picture) => {
@@ -40,41 +69,71 @@ const createImagesMarkup = (pictures) => {
 
 };
 
-const createOffersMarkup = (offers, type) => {
-  if (offers) {
-    return offers.map((offer, index) => {
-      const {title, price, isChecked} = offer;
-      return (
-        `<div class="event__offer-selector">
-        <input class="event__offer-checkbox  visually-hidden"
-        id="event-offer-${type.toLowerCase()}-${index}" type="checkbox"
-        name="event-offer-${type.toLowerCase()}"
-        ${isChecked ? `checked` : ``}>
-
-        <label class="event__offer-label" for="event-offer-${type.toLowerCase()}-${index}">
-          <span class="event__offer-title">${title}</span>
-          &plus;
-          &euro;&nbsp;<span class="event__offer-price">${price}</span>
-        </label>
-      </div>`
-      );
-    }).join(`\n`);
+const createOffersSection = (offers, type) => {
+  const offersForThisType = getOffers(OFFERS, type);
+  if (offersForThisType[0]) {
+    return (
+      `<section class="event__section  event__section--offers">
+        <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+      <div class="event__available-offers">
+      ${createOffersMarkup(offers, type, offersForThisType)}
+        </div>
+        </section>`
+    );
   } else {
     return ``;
   }
+};
 
+const createOffersMarkup = (pointOffers, type, offersForThisType) => {
+
+  return offersForThisType.map((offer, index) => {
+    // debugger;
+    const {title, price} = offer;
+    return (
+      `<div class="event__offer-selector">
+      <input class="event__offer-checkbox  visually-hidden"
+      id="event-offer-${type.toLowerCase()}-${index}" type="checkbox"
+      name="event-offer-${type.toLowerCase()}"
+      ${pointOffers.includes(offer) ? `checked` : ``}
+      >
+
+      <label class="event__offer-label" for="event-offer-${type.toLowerCase()}-${index}">
+        <span class="event__offer-title">${title}</span>
+        &plus;
+        &euro;&nbsp;<span class="event__offer-price">${price}</span>
+      </label>
+    </div>`
+    );
+  }).join(`\n`);
+};
+
+const createOffersAndDescriptionMarkup = (destination, offers, type) => {
+  const offersMarkup = createOffersSection(offers, type);
+  const descriptionMarkup = createDescriptionSection(destination);
+  if (offersMarkup + descriptionMarkup === ``) {
+    return ``;
+  } else {
+    return (
+      `<section class="event__details">
+        ${offersMarkup}
+        ${descriptionMarkup}
+      </section>`
+    );
+  }
 };
 
 const createTripEditTemplate = (tripPoint) => {
 
   const {type, destination, price, offers, startDate, endDate, isFavorite} = tripPoint;
+  const isBlockSaveButton = isAllowedDestination(destination) && isAllowedPriceValue;
   let preposition = `to`;
   if ((type === `Check`) || (type === `Sightseeing`) || (type === `Restaurant`)) {
     preposition = `in`;
   }
   const typeTransferMarkup = createTypeButtonMarkup(ROUTE_TYPES, 3, 9, tripPoint);
   const typeActivityMarkup = createTypeButtonMarkup(ROUTE_TYPES, 0, 3, tripPoint);
-  const offersMarkup = createOffersMarkup(offers, type);
+  const offersAndDescriptionMarkup = createOffersAndDescriptionMarkup(destination, offers, type);
 
 
   return (
@@ -104,7 +163,7 @@ const createTripEditTemplate = (tripPoint) => {
         <label class="event__label  event__type-output" for="event-destination-1">
           ${type} ${preposition}
         </label>
-        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1">
+        <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination ? destination.name : ``}" list="destination-list-1">
         <datalist id="destination-list-1">
           ${createCitiesMarkup(CITIES)}
         </datalist>
@@ -130,7 +189,7 @@ const createTripEditTemplate = (tripPoint) => {
         <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
       </div>
 
-      <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
+      <button class="event__save-btn  btn  btn--blue" type="submit" ${isBlockSaveButton ? `disabled` : ``}>Save</button>
       <button class="event__reset-btn" type="reset">Delete</button>
 
       <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${isFavorite ? `checked` : ``}>
@@ -145,45 +204,19 @@ const createTripEditTemplate = (tripPoint) => {
         <span class="visually-hidden">Open event</span>
       </button>
     </header>
-
-    <section class="event__details">
-
-      <section class="event__section  event__section--offers">
-        <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-
-        <div class="event__available-offers">
-        ${offersMarkup}
-          </div>
-
-
-
-      </section>
-
-      <section class="event__section  event__section--destination">
-        <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-        <p class="event__destination-description">${destination.description}</p>
-
-        <div class="event__photos-container">
-          <div class="event__photos-tape">
-            ${createImagesMarkup(destination.pictures)}
-          </div>
-        </div>
-      </section>
-    </section>
+    ${offersAndDescriptionMarkup}
   </form>
 `);
 };
 
-DESTINATIONS.find((it) => it.name === name);
-
 const parseFormData = (formData) => {
-  const startDate = moment(formData.get(`event-start-time`), `DD/MM/YY HH:mm`).unix() * 1000;
-  const endDate = moment(formData.get(`event-end-time`), `DD/MM/YY HH:mm`).unix() * 1000;
+  const startDate = getTimeFromForm(formData, `event-start-time`);
+  const endDate = getTimeFromForm(formData, `event-end-time`);
   const destination = DESTINATIONS.find((it) => it.name === formData.get(`event-destination`));
   const type = formData.get(`event-type`).charAt(0).toUpperCase() + formData.get(`event-type`).slice(1);
   return {
     type,
-    destination, // .charAt(0).toUpperCase() + formData.get(`event-destination`).slice(1), // charAt(0).toUpperCase() + name.slice(1)
+    destination,
     offers: formData.getAll(`event-offers`),
     price: parseInt(formData.get(`event-price`), 10),
     startDate,
@@ -218,6 +251,7 @@ export default class TripEdit extends AbstractSmartComponent {
   recoveryListeners() {
     this.setSubmitHandler(this._submitHandler);
     this.setDeleteButtonClickHandler(this._deleteButtonClickHandler);
+    this.setCloseButtonClickHandler(this._closeButtonClickHandler);
     this._subscribeOnEvents();
   }
 
@@ -245,6 +279,7 @@ export default class TripEdit extends AbstractSmartComponent {
 
   _subscribeOnEvents() {
     const element = this.getElement();
+    const saveButton = this.getElement().querySelector(`.event__save-btn`);
 
     element.querySelector(`.event__favorite-checkbox`)
     .addEventListener(`click`, () => {
@@ -259,9 +294,19 @@ export default class TripEdit extends AbstractSmartComponent {
       this.rerender();
     });
 
+    element.querySelector(`.event__input--price`)
+    .addEventListener(`blur`, (evt) => {
+      const priceValue = evt.target.value;
+      // const saveButton = this.getElement().querySelector(`.event__save-btn`);
+      saveButton.disabled = !isAllowedPriceValue(priceValue);
+    });
+
     element.querySelector(`.event__input--destination`)
     .addEventListener(`blur`, (evt) => {
       const destinationName = (evt.target.value).charAt(0).toUpperCase() + (evt.target.value).slice(1);
+
+      // const saveButton = this.getElement().querySelector(`.event__save-btn`);
+      saveButton.disabled = !isAllowedDestination(destinationName);
       const destination = DESTINATIONS.filter((it) => it.name === destinationName)[0];
 
       this._tripPoint.destination = destination;
@@ -317,18 +362,8 @@ export default class TripEdit extends AbstractSmartComponent {
     this._deleteButtonClickHandler = handler;
   }
 
-  // _setFavoritesButtonClickHandler(handler) {
-  //   this.getElement().querySelector(`.event__favorite-checkbox`)
-  //     .addEventListener(`click`, handler);
-  // }
-
-  // _setTypeChangeHandler(handler) {
-  //   this.getElement().querySelector(`.event__type-list`)
-  //   .addEventListener(`change`, handler);
-  // }
-
-  // _setCityChangeHandler(handler) {
-  //   this.getElement().querySelector(`.event__input--destination`)
-  //   .addEventListener(`blur`, handler);
-  // }
+  setCloseButtonClickHandler(handler) {
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, handler);
+    this._closeButtonClickHandler = handler;
+  }
 }

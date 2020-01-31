@@ -1,5 +1,13 @@
-import {MONTHS} from "../const.js";
+// import {MONTHS} from "../const.js";
 import moment from 'moment';
+
+export const getTimeFromForm = (data, from) => {
+  return moment(data.get(from), `DD/MM/YY HH:mm`).unix() * 1000;
+};
+
+export const getShortMonthAndDate = (date) => {
+  return moment(date).format(`MMM DD`);
+};
 
 export const formatTime = (date) => {
   return moment(date).format(`HH:mm`);
@@ -23,27 +31,13 @@ export const formatTimeDuration = (duration) => {
   return days + hours + minutes;
 };
 
-
-export const getRandomInteger = (min, max) =>
-  min + Math.floor(max * Math.random());
-
-export const getRandomArrayItem = (array) =>
-  array[getRandomInteger(0, array.length)];
-
-export const shuffleArray = (array) =>
-  array.map((a) => [Math.random(), a]).sort((a, b) => a[0] - b[0]).map((a) => a[1]);
-
-export const getDescriptions = (array) =>
-  shuffleArray(array).slice(0, getRandomInteger(1, 3)).join(` `);
-
-export const getOffers = (array) => array.filter(() => Math.random() > 0.5).slice(0, getRandomInteger(0, 6));
-
-export const getRandomDate = () => {
-  return (
-    Date.now() +
-    1 +
-    Math.floor(Math.random() * 24 * 60 * 60 * 1000 * 7) - Math.floor(Math.random() * 24 * 60 * 60 * 1000 * 5)
-  );
+// это важно для отрисовки!
+export const getOffers = function (offers, type) {
+  const suitibleOffers = offers.filter((it) => it.type.toLowerCase() === type.toLowerCase());
+  if (suitibleOffers[0]) {
+    return suitibleOffers[0].offers;
+  } else {
+    return [];
+  }
 };
 
-export const getMonthName = (date) => MONTHS[date.getMonth()];

@@ -1,13 +1,12 @@
-// import {getFullDate, getMonthName} from "../utils/common.js";
 import AbstractComponent from './abstract-component.js';
-import moment from 'moment';
+import {getShortMonthAndDate} from '../utils/common.js';
 
 const createTripDayTemplate = (day, index) => {
   if (day) {
     return `<li class="trip-days__item  day">
       <div class="day__info">
         <span class="day__counter">${index}</span>
-        <time class="day__date" datetime="${day}">${moment(day).format(`MMM DD`)}</time>
+        <time class="day__date" datetime="${day}">${getShortMonthAndDate(day)}</time>
       </div>
       <ul class="trip-events__list">
       </ul>

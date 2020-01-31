@@ -19,6 +19,7 @@ const createOffersTemplate = (offers) => {
 const createTripPointTemplate = (tripPoint) => {
   const {type, destination, price, offers, startDate, endDate, duration} = tripPoint;
 
+  // debugger;
   let preposition = `to`;
   if ((type === `Check`) || (type === `Sightseeing`) || (type === `Restaurant`)) {
     preposition = `in`;
