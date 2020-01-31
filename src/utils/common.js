@@ -5,6 +5,10 @@ export const getTimeFromForm = (data, from) => {
   return moment(data.get(from), `DD/MM/YY HH:mm`).unix() * 1000;
 };
 
+export const getNumberFromDate = (date) => {
+  return moment(date).unix();
+};
+
 export const getShortMonthAndDate = (date) => {
   return moment(date).format(`MMM DD`);
 };

@@ -37,6 +37,14 @@ export default class FilterController {
     }
   }
 
+  show() {
+    this._filterComponent.show();
+  }
+
+  hide() {
+    this._filterComponent.hide();
+  }
+
   _onFilterChange(filterType) {
     this._pointsModel.setFilter(filterType);
     this._activeFilterType = filterType;

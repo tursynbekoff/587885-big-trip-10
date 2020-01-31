@@ -1,4 +1,4 @@
-import {formatTime, getFullDate, getOffers, getTimeFromForm} from "../utils/common.js";
+import {formatTime, getFullDate, getOffers, getTimeFromForm, getNumberFromDate} from "../utils/common.js";
 import {ROUTE_TYPES} from '../const.js';
 import AbstractSmartComponent from './abstract-smart-component.js';
 import {CITIES, DESTINATIONS, OFFERS} from '../mock/trip-point.js';
@@ -12,6 +12,13 @@ const isAllowedDestination = (destination) => {
 const isAllowedPriceValue = (price) => {
   const isPriceNumber = isFinite(price);
   return isPriceNumber;
+};
+
+const isAllowedTime = (startDate, endDate) => {
+  const firstDate = getNumberFromDate(startDate);
+  const secondDate = getNumberFromDate(endDate);
+  const isStartDateLessEndDate = (firstDate) && (secondDate) && (firstDate < secondDate);
+  return isStartDateLessEndDate;
 };
 
 const createTypeButtonMarkup = (types, from, to, tripPoint) => {
@@ -94,7 +101,7 @@ const createOffersMarkup = (pointOffers, type, offersForThisType) => {
       `<div class="event__offer-selector">
       <input class="event__offer-checkbox  visually-hidden"
       id="event-offer-${type.toLowerCase()}-${index}" type="checkbox"
-      name="event-offer-${type.toLowerCase()}"
+      name="event-offer"
       ${pointOffers.includes(offer) ? `checked` : ``}
       >
 
@@ -126,7 +133,7 @@ const createOffersAndDescriptionMarkup = (destination, offers, type) => {
 const createTripEditTemplate = (tripPoint) => {
 
   const {type, destination, price, offers, startDate, endDate, isFavorite} = tripPoint;
-  const isBlockSaveButton = isAllowedDestination(destination) && isAllowedPriceValue;
+  const isBlockSaveButton = isAllowedDestination(destination) && isAllowedPriceValue && isAllowedTime(startDate, endDate);
   let preposition = `to`;
   if ((type === `Check`) || (type === `Sightseeing`) || (type === `Restaurant`)) {
     preposition = `in`;
@@ -209,15 +216,46 @@ const createTripEditTemplate = (tripPoint) => {
 `);
 };
 
-const parseFormData = (formData) => {
+const getOffersByTitle = (offerTitles, typePoint) => {
+  const index = OFFERS.findIndex((it) => it.type.toLowerCase() === typePoint.toLowerCase());
+  const offersForThisType = OFFERS[index].offers;
+  let suitibleOffers = [];
+  for (let i = 0; i < offersForThisType.length; i++) {
+    if (offerTitles.includes(offersForThisType[i].title)) {
+      suitibleOffers.push(offersForThisType[i]);
+    }
+  }
+  return suitibleOffers;
+};
+
+const getCheckedOffers = (element, type) => {
+
+  const offersTitles = element.querySelectorAll(`.event__offer-title`);
+  let offersCheckedTitles = [];
+  for (let i = 0; i < offersTitles.length; i++) {
+    if (offersTitles[i].parentNode.previousElementSibling.checked) {
+      offersCheckedTitles.push(offersTitles[i].innerHTML);
+    }
+  }
+  if (offersCheckedTitles.lenght === 0) {
+    return [];
+  } else {
+    const offers = getOffersByTitle(offersCheckedTitles, type);
+    return offers;
+  }
+};
+
+
+const parseFormData = (form, formData) => {
   const startDate = getTimeFromForm(formData, `event-start-time`);
   const endDate = getTimeFromForm(formData, `event-end-time`);
   const destination = DESTINATIONS.find((it) => it.name === formData.get(`event-destination`));
   const type = formData.get(`event-type`).charAt(0).toUpperCase() + formData.get(`event-type`).slice(1);
+  const offers = getCheckedOffers(form, type);
   return {
     type,
     destination,
-    offers: formData.getAll(`event-offers`),
+    offers,
     price: parseInt(formData.get(`event-price`), 10),
     startDate,
     endDate,
@@ -260,21 +298,18 @@ export default class TripEdit extends AbstractSmartComponent {
   }
 
   rerender() {
-    // debugger;
     super.rerender();
     this._applyFlatpickr();
   }
 
   reset() {
-    // const tripPoint = this._tripPoint;
     this.rerender();
   }
 
   getData() {
     const form = this.getElement();
     const formData = new FormData(form);
-
-    return parseFormData(formData);
+    return parseFormData(form, formData);
   }
 
   _subscribeOnEvents() {
@@ -297,27 +332,25 @@ export default class TripEdit extends AbstractSmartComponent {
     element.querySelector(`.event__input--price`)
     .addEventListener(`blur`, (evt) => {
       const priceValue = evt.target.value;
-      // const saveButton = this.getElement().querySelector(`.event__save-btn`);
       saveButton.disabled = !isAllowedPriceValue(priceValue);
+    });
+
+    element.querySelector(`.event__field-group--time`)
+    .addEventListener(`change`, () => {
+      const startDate = element.querySelector(`#event-start-time-1`).value;
+      const endDate = element.querySelector(`#event-end-time-1`).value;
+      saveButton.disabled = !isAllowedTime(startDate, endDate);
     });
 
     element.querySelector(`.event__input--destination`)
     .addEventListener(`blur`, (evt) => {
       const destinationName = (evt.target.value).charAt(0).toUpperCase() + (evt.target.value).slice(1);
-
-      // const saveButton = this.getElement().querySelector(`.event__save-btn`);
       saveButton.disabled = !isAllowedDestination(destinationName);
       const destination = DESTINATIONS.filter((it) => it.name === destinationName)[0];
 
       this._tripPoint.destination = destination;
       this.rerender();
     });
-
-    // element.querySelector(`.form`)
-    // .addEventListener(`submit`, (evt) => {
-    //   evt.preventDefault();
-
-    // });
   }
 
   _applyFlatpickr() {
@@ -357,7 +390,6 @@ export default class TripEdit extends AbstractSmartComponent {
   setDeleteButtonClickHandler(handler) {
     this.getElement().querySelector(`.event__reset-btn`)
       .addEventListener(`click`, handler);
-    // debugger;
 
     this._deleteButtonClickHandler = handler;
   }

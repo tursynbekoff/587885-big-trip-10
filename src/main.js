@@ -8,7 +8,7 @@ import TripInfoComponent from './components/trip-info';
 import {createTripPoints} from './mock/trip-point';
 
 
-const POINTS_NUMBER = 1;
+const POINTS_NUMBER = 15;
 const points = createTripPoints(POINTS_NUMBER);
 const pointsModel = new PointsModel();
 pointsModel.setPoints(points);
@@ -44,6 +44,7 @@ buttonAddPoint.addEventListener(`click`, () => {
   siteMenuComponent.setActiveItem(MenuItem.TABLE);
   statsComponent.hide();
   boardController.show();
+  filterController.show();
   boardController.createPoint();
 });
 
@@ -51,11 +52,13 @@ siteMenuComponent.setClickHandler((menuItem) => {
   switch (menuItem) {
     case MenuItem.TABLE:
       boardController.show();
+      filterController.show();
       statsComponent.hide();
       siteMenuComponent.setActiveItem(MenuItem.TABLE);
       break;
     case MenuItem.STATS:
       boardController.hide();
+      filterController.hide();
       statsComponent.show();
       siteMenuComponent.setActiveItem(MenuItem.STATS);
       break;

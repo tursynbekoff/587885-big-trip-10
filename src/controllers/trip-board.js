@@ -31,7 +31,7 @@ const renderDays = (container, days, points, onDataChange, onViewChange) => {
     return [];
   } else {
     // render(container, sortingComponent, RenderPosition.AFTERBEGIN);
-    debugger;
+    // debugger;
     container.innerHTML = ``;
     if (days) {
       return days.flatMap((day, index) => {
