@@ -104,8 +104,9 @@ export default class PointController {
 
   _replaceEditToPoint() {
     this._pointEditComponent.reset();
-
-    replace(this._pointComponent, this._pointEditComponent);
+    if (document.contains(this._pointEditComponent.getElement())) {
+      replace(this._pointComponent, this._pointEditComponent);
+    }
     this._mode = Mode.DEFAULT;
   }
 

@@ -1,11 +1,13 @@
 import {formatTime, getFullDate, getOffers, getTimeFromForm, getNumberFromDate} from "../utils/common.js";
 import {ROUTE_TYPES} from '../const.js';
 import AbstractSmartComponent from './abstract-smart-component.js';
-import {CITIES, DESTINATIONS, OFFERS} from '../mock/trip-point.js';
+// import {CITIES, DESTINATIONS, OFFERS} from '../mock/trip-point.js';
 import flatpickr from 'flatpickr';
+import {tripDestinations, tripOffers} from '../main.js';
+// debugger;
 
 const isAllowedDestination = (destination) => {
-  const isDestinationFromList = CITIES.includes(destination);
+  const isDestinationFromList = tripDestinations.includes(destination); // поправить? тут
   return isDestinationFromList;
 };
 
@@ -35,17 +37,20 @@ const createTypeButtonMarkup = (types, from, to, tripPoint) => {
   }).join(`\n`);
 };
 
-const createCitiesMarkup = (cities) => {
-  return cities.map((city) => {
+const createCitiesMarkup = () => {
+  return tripDestinations.map((it) => {
+    // const hello = it;
+    // debugger;
     return (
-      `<option value=${city}></option>`
+      `<option value=${it.name}></option>`
     );
   }).join(`\n`);
+  // debugger;
 };
 
 const createDescriptionSection = (destination) => {
   // debugger;
-  if (destination.description) {
+  if (destination) {
     return (
       `<section class="event__section  event__section--destination">
       <h3 class="event__section-title  event__section-title--destination">Destination</h3>
@@ -77,7 +82,7 @@ const createImagesMarkup = (pictures) => {
 };
 
 const createOffersSection = (offers, type) => {
-  const offersForThisType = getOffers(OFFERS, type);
+  const offersForThisType = getOffers(tripOffers, type);
   if (offersForThisType[0]) {
     return (
       `<section class="event__section  event__section--offers">
@@ -95,7 +100,6 @@ const createOffersSection = (offers, type) => {
 const createOffersMarkup = (pointOffers, type, offersForThisType) => {
 
   return offersForThisType.map((offer, index) => {
-    // debugger;
     const {title, price} = offer;
     return (
       `<div class="event__offer-selector">
@@ -172,7 +176,7 @@ const createTripEditTemplate = (tripPoint) => {
         </label>
         <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination ? destination.name : ``}" list="destination-list-1">
         <datalist id="destination-list-1">
-          ${createCitiesMarkup(CITIES)}
+          ${createCitiesMarkup()}
         </datalist>
       </div>
 
@@ -217,8 +221,8 @@ const createTripEditTemplate = (tripPoint) => {
 };
 
 const getOffersByTitle = (offerTitles, typePoint) => {
-  const index = OFFERS.findIndex((it) => it.type.toLowerCase() === typePoint.toLowerCase());
-  const offersForThisType = OFFERS[index].offers;
+  const index = tripOffers.findIndex((it) => it.type.toLowerCase() === typePoint.toLowerCase());
+  const offersForThisType = tripOffers[index].offers;
   let suitibleOffers = [];
   for (let i = 0; i < offersForThisType.length; i++) {
     if (offerTitles.includes(offersForThisType[i].title)) {
@@ -237,7 +241,7 @@ const getCheckedOffers = (element, type) => {
       offersCheckedTitles.push(offersTitles[i].innerHTML);
     }
   }
-  if (offersCheckedTitles.lenght === 0) {
+  if (!offersCheckedTitles.length) {
     return [];
   } else {
     const offers = getOffersByTitle(offersCheckedTitles, type);
@@ -249,7 +253,7 @@ const getCheckedOffers = (element, type) => {
 const parseFormData = (form, formData) => {
   const startDate = getTimeFromForm(formData, `event-start-time`);
   const endDate = getTimeFromForm(formData, `event-end-time`);
-  const destination = DESTINATIONS.find((it) => it.name === formData.get(`event-destination`));
+  const destination = tripDestinations.find((it) => it.name === formData.get(`event-destination`));
   const type = formData.get(`event-type`).charAt(0).toUpperCase() + formData.get(`event-type`).slice(1);
   const offers = getCheckedOffers(form, type);
   return {
@@ -325,7 +329,7 @@ export default class TripEdit extends AbstractSmartComponent {
     element.querySelector(`.event__type-list`)
     .addEventListener(`change`, (evt) => {
       this._tripPoint.type = (evt.target.value).charAt(0).toUpperCase() + (evt.target.value).slice(1);
-      this._tripPoint.offers = getOffers(OFFERS, this._tripPoint.type);
+      this._tripPoint.offers = getOffers(tripOffers, this._tripPoint.type);
       this.rerender();
     });
 
@@ -346,7 +350,7 @@ export default class TripEdit extends AbstractSmartComponent {
     .addEventListener(`blur`, (evt) => {
       const destinationName = (evt.target.value).charAt(0).toUpperCase() + (evt.target.value).slice(1);
       saveButton.disabled = !isAllowedDestination(destinationName);
-      const destination = DESTINATIONS.filter((it) => it.name === destinationName)[0];
+      const destination = tripDestinations.filter((it) => it.name === destinationName)[0];
 
       this._tripPoint.destination = destination;
       this.rerender();

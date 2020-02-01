@@ -3,7 +3,7 @@ import {formatTimeDuration, formatTime} from '../utils/common.js';
 import AbstractComponent from './abstract-component.js';
 
 const createOffersTemplate = (offers) => {
-  if (offers) {
+  if (offers.length) {
     return offers.map((it) => (
       `<li class="event__offer">
              <span class="event__offer-title">${it.title}</span>
@@ -18,7 +18,8 @@ const createOffersTemplate = (offers) => {
 
 const createTripPointTemplate = (tripPoint) => {
   const {type, destination, price, offers, startDate, endDate, duration} = tripPoint;
-
+  debugger;
+  // const type =  type.charAt(0).toUpperCase() + type.slice(1);
   // debugger;
   let preposition = `to`;
   if ((type === `Check`) || (type === `Sightseeing`) || (type === `Restaurant`)) {
