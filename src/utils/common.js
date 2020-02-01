@@ -13,8 +13,8 @@ export const getDateAndTime = (date) => {
   return moment(date).format(`DD/MM/YY HH:mm`);
 };
 
-export const getTimeFromForm = (data, from) => {
-  return moment(data.get(from), `DD/MM/YY HH:mm`).unix() * 1000;
+export const getIOSTimeFromForm = (data, from) => {
+  return moment(data.get(from), `DD/MM/YY HH:mm`).toISOString();
 };
 
 export const getNumberFromDate = (date) => {

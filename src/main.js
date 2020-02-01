@@ -9,7 +9,7 @@ import TripInfoComponent from './components/trip-info';
 // import {createTripPoints} from './mock/trip-point';
 import {getRightPriceForOffers} from './utils/common.js';
 
-const AUTHORIZATION = `Basic w590ik2988qaaq`;
+const AUTHORIZATION = `Basic w590ik2988qaaqrrr3`;
 const END_POINT = `https://htmlacademy-es-10.appspot.com/big-trip`;
 const api = new API(END_POINT, AUTHORIZATION);
 const pointsModel = new PointsModel();

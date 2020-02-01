@@ -1,4 +1,4 @@
-import {formatTime, getFullDate, getOffers, getTimeFromForm,
+import {formatTime, getFullDate, getOffers, getIOSTimeFromForm,
   getNumberFromDate, capitalizeString, getToStringDateFormat, getIOSTime, getDateAndTime, getUnixFromFlatpickr, getIOSfromFlatpickrTime} from "../utils/common.js";
 import {ROUTE_TYPES} from '../const.js';
 import AbstractSmartComponent from './abstract-smart-component.js';
@@ -244,12 +244,11 @@ const getCheckedOffers = (element, type) => {
 
 
 const parseFormData = (form, formData) => {
-  const startDate = getIOSfromFlatpickrTime(formData, `event-start-time`);
-  const endDate = getIOSfromFlatpickrTime(formData, `event-end-time`);
+  const startDate = getIOSTimeFromForm(formData, `event-start-time`);
+  const endDate = getIOSTimeFromForm(formData, `event-end-time`);
   const destination = tripDestinations.find((it) => it.destination.name === formData.get(`event-destination`)).destination;
   const type = formData.get(`event-type`);
   const offers = getCheckedOffers(form, type);
-  // debugger;
   return new PointModel({
     'type': type.toLowerCase(),
     'destination': destination,

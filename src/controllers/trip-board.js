@@ -125,7 +125,9 @@ export default class BoardController {
   _updatePoints() {
     this._removePoints();
     this._pointsModel.setDays();
-    this._renderPoints(this._pointsModel.getPoints(), this._pointsModel.getDays());
+    // this._renderPoints(this._pointsModel.getPoints(), this._pointsModel.getDays());
+    // this._tripInfoComponent.rerender();
+    this._onSortTypeChange(this._currentSortType);
   }
 
   _onSortTypeChange(sortType) {
@@ -153,6 +155,7 @@ export default class BoardController {
     }
     renderSort(this._container, this._sortingComponent, sortedPoints);
     this._showedPointControllers = renderDays(this._dayBoardComponent.getElement(), sortedDays, sortedPoints, this._onDataChange, this._onViewChange);
+    // this._tripInfoComponent.rerender();
   }
 
   _onDataChange(pointController, oldData, newData) {
@@ -170,32 +173,27 @@ export default class BoardController {
           destroyedPoint.destroy();
         }
         this._showedPointControllers = [].concat(pointController, this._showedPointControllers);
+        // this._tripInfoComponent.rerender();
         this._updatePoints();
       }
     } else if (newData === null) {
       this._pointsModel.removePoint(oldData.id);
       this._updatePoints();
     } else {
-      // const isSuccess = this._pointsModel.updatePoint(oldData.id, newData);
-      // if (isSuccess) {
-      //   if (getFullDate(oldData.startDate) === getFullDate(newData.startDate)) {
-      //     pointController.render(newData, TripControllerMode.DEFAULT);
-      //     this._updatePoints();
-      //   } else {
-      //     this._updatePoints();
-      //   }
-      // }
+      // изменение точки
       this._api.updatePoint(oldData.id, newData)
       .then((pointModel) => {
         const isSuccess = this._pointsModel.updatePoint(oldData.id, pointModel);
 
         if (isSuccess) {
           // pointController.render(pointModel, TripControllerMode.DEFAULT);
-          this._updatePoints();
+          // this._updatePoints();
           if (getFullDate(oldData.startDate) === getFullDate(pointModel.startDate)) {
             pointController.render(pointModel, TripControllerMode.DEFAULT);
+            // this._tripInfoComponent.rerender();
             this._updatePoints();
           } else {
+            // this._tripInfoComponent.rerender();
             this._updatePoints();
           }
         }
