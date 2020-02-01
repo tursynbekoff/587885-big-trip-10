@@ -3,7 +3,7 @@ import {formatTimeDuration, formatTime} from '../utils/common.js';
 import AbstractComponent from './abstract-component.js';
 
 const createOffersTemplate = (offers) => {
-  if (offers) {
+  if (offers.length) {
     return offers.map((it) => (
       `<li class="event__offer">
              <span class="event__offer-title">${it.title}</span>
@@ -18,17 +18,19 @@ const createOffersTemplate = (offers) => {
 
 const createTripPointTemplate = (tripPoint) => {
   const {type, destination, price, offers, startDate, endDate, duration} = tripPoint;
-
+  // const type =  type.charAt(0).toUpperCase() + type.slice(1);
+  // debugger;
   let preposition = `to`;
-  if ((type === `Check`) || (type === `Sightseeing`) || (type === `Restaurant`)) {
+  if ((type === `check`) || (type === `sightseeing`) || (type === `restaurant`)) {
     preposition = `in`;
+    // debugger;
   }
   return `<li class="trip-events__item">
   <div class="event">
     <div class="event__type">
-      <img class="event__type-icon" width="42" height="42" src="img/icons/${type.toLowerCase()}.png" alt="Event type icon">
+      <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
     </div>
-    <h3 class="event__title">${type} ${preposition} ${destination.name}</h3>
+    <h3 class="event__title">${type.charAt(0).toUpperCase() + type.slice(1)} ${preposition} ${destination.name}</h3>
 
     <div class="event__schedule">
       <p class="event__time">
@@ -45,7 +47,7 @@ const createTripPointTemplate = (tripPoint) => {
 
     <h4 class="visually-hidden">Offers:</h4>
     <ul class="event__selected-offers">
-    ${createOffersTemplate(offers)}
+    ${createOffersTemplate(offers.slice(0, 3))}
     </ul>
 
     <button class="event__rollup-btn" type="button">

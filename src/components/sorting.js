@@ -45,18 +45,26 @@ export default class Sorting extends AbstractComponent {
     super();
     this._currentSortType = SortType.DEFAULT;
   }
+
   getTemplate() {
     return createSortingTemplate(this._currentSortType);
   }
 
+  removeElement() {
+    if (!this._element) {
+      return;
+    }
+
+    this._element.remove();
+    super.removeElement();
+  }
+
   setSortTypeChangeHandler(handler) {
     this.getElement().addEventListener(`click`, (evt) => {
-      // evt.preventDefault();
 
       if (evt.target.tagName !== `LABEL`) {
         return;
       }
-      // debugger;
       const sortType = evt.target.dataset.sortType;
 
       if (this._currentSortType === sortType) {

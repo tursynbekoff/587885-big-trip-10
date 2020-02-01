@@ -1,13 +1,12 @@
-import moment from 'moment';
-// import {getMonthName} from "../utils/common.js";
-import AbstractComponent from './abstract-component.js';
+import AbstractSmartComponent from './abstract-smart-component.js';
+import {getShortMonthAndDate} from '../utils/common.js';
 
 
 // не забыть поправить константы и функцию сортед дейс, она повторяется и здесь нахер не нужна
 const createCitiesTemplate = (points) => {
   const sortedPoints = points.sort((a, b) => a.startDate > b.startDate);
   if (sortedPoints.length <= 2) {
-    return sortedPoints.map(({destination}) => destination).join(` — `);
+    return sortedPoints.map(({destination}) => destination.name).join(` — `);
   } else {
     return `${sortedPoints[0].destination.name} — ... —  ${sortedPoints[sortedPoints.length - 1].destination.name}`;
   }
@@ -15,23 +14,28 @@ const createCitiesTemplate = (points) => {
 
 const getTripDates = (points) => {
   const sortedPoints = points.sort((a, b) => a.startDate > b.startDate);
-  return `${moment(new Date(sortedPoints[0].startDate)).format(`MMM DD`)} — ${moment(new Date(sortedPoints[sortedPoints.length - 1].startDate)).format(`MMM DD`)}`;
+  return `${getShortMonthAndDate(sortedPoints[0].startDate)} — ${getShortMonthAndDate(sortedPoints[sortedPoints.length - 1].startDate)}`;
 };
 
 
 const createCostTemplate = (points) => {
-  let fullPrice = 0;
+  let fullPricePoints = 0;
+  let choosedOffersPrice = 0;
   if (points.length !== 0) {
-    fullPrice = points.reduce((price, point) => price + point.price, 0);
-    // document.querySelector(`.trip-info__cost-value`).textContent = fullPrice;
+    const choosedOffersPriceArray = points.map((point) => point.offers.reduce((price, offer) => price + offer.price, 0));
+    choosedOffersPrice = choosedOffersPriceArray.reduce((price, offerPrice) => price + offerPrice, 0);
+    fullPricePoints = points.reduce((price, point) => price + point.price, 0);
   }
-  return fullPrice;
+  return fullPricePoints + choosedOffersPrice;
 };
 
 
 const createTripInfoTemplate = (points) => {
-  return (
-    `<section class="trip-main__trip-info  trip-info">
+  if (points.length === 0) {
+    return `<section class="trip-main__trip-info  trip-info"></section>`;
+  } else {
+    return (
+      `<section class="trip-main__trip-info  trip-info">
             <div class="trip-info__main">
               <h1 class="trip-info__title">${createCitiesTemplate(points)}</h1>
 
@@ -42,17 +46,25 @@ const createTripInfoTemplate = (points) => {
               Total: &euro;&nbsp;<span class="trip-info__cost-value">${createCostTemplate(points)}</span>
             </p>
           </section>`
-  );
+    );
+  }
 };
 
-export default class TripInfo extends AbstractComponent {
-  constructor(points) {
+export default class TripInfo extends AbstractSmartComponent {
+  constructor(pointsModel) {
     super();
-    this.points = points;
+    this._pointsModel = pointsModel;
   }
 
   getTemplate() {
-    return createTripInfoTemplate(this.points);
+    return createTripInfoTemplate(this._pointsModel.getPoints());
+  }
+
+  recoveryListeners() {
+  }
+
+  rerender() {
+    super.rerender();
   }
 }
 

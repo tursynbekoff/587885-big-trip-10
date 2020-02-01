@@ -64,13 +64,11 @@ class DefaultChartConfig {
 }
 
 const getPointsTimeSpendByType = (points) => {
-  const type = new Set();
   const pointsTimeSpendByType = new Map();
   const getDurationInHours = (point) => moment.duration(point.duration).asHours();
 
   points.forEach((it) => {
-    if (!type.has(it.type)) {
-      type.add(it.type);
+    if (!pointsTimeSpendByType.has(it.type)) {
       pointsTimeSpendByType.set(it.type, getDurationInHours(it));
     } else {
       pointsTimeSpendByType.set(it.type, pointsTimeSpendByType.get(it.type) + getDurationInHours(it));
@@ -80,12 +78,10 @@ const getPointsTimeSpendByType = (points) => {
 };
 
 const getPointsPriceByType = (points) => {
-  const type = new Set();
   const pointsPriceByType = new Map();
 
   points.forEach((it) => {
-    if (!type.has(it.type)) {
-      type.add(it.type);
+    if (!pointsPriceByType.has(it.type)) {
       pointsPriceByType.set(it.type, it.price);
     } else {
       pointsPriceByType.set(it.type, pointsPriceByType.get(it.type) + it.price);
@@ -96,15 +92,13 @@ const getPointsPriceByType = (points) => {
 
 const getPointsCountByType = (points) => {
   const typeTransport = ROUTE_TYPES.slice(TYPE_TRANSPORT_BEGINNING);
-  const types = new Set();
   const pointsCountByType = new Map();
 
   points.forEach((it) => {
     if (!typeTransport.includes(it.type)) {
       return;
     }
-    if (!types.has(it.type)) {
-      types.add(it.type);
+    if (!pointsCountByType.has(it.type)) {
       pointsCountByType.set(it.type, 1);
     } else {
       pointsCountByType.set(it.type, pointsCountByType.get(it.type) + 1);
@@ -112,12 +106,6 @@ const getPointsCountByType = (points) => {
   });
   return pointsCountByType;
 };
-
-// const getSortedKeysFromMap = (myMap) => {
-//   // debugger;
-//   // return Array.from(myMap.keys().sort((a, b) => myMap.get(b) - myMap.get(a)));
-//   return Array.from(myMap.keys().sort((a, b) => myMap.get(b) - myMap.get(a)));
-// };
 
 const getSortedKeysFromMap = (map) => Array.from(map.keys()).sort((a, b) => map.get(b) - map.get(a));
 

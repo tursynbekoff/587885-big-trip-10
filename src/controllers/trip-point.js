@@ -1,8 +1,6 @@
 import TripPointComponent from '../components/trip-point.js';
 import TripEditComponent from '../components/trip-edit.js';
 import {RenderPosition, render, replace, remove} from '../utils/render.js';
-// import {getOffers, getDescriptions} from '../utils/common.js';
-// import {OFFERS, DESCRIPTIONS} from '../mock/trip-point.js';
 
 export const Mode = {
   ADDING: `adding`,
@@ -10,23 +8,21 @@ export const Mode = {
   EDIT: `edit`,
 };
 
-export const getEmptyPoint = (startDate) => {
-  return {
-    id: String(new Date() + Math.random()),
-    type: `Bus`,
-    destination: {
-      name: ``,
-      description: ``,
-    },
-    img: ``,
+export const EmptyPoint = {
+  id: ``,
+  type: `bus`,
+  destination: {
+    name: ``,
     description: ``,
-    price: ``,
-    offers: [],
-    startDate,
-    endDate: startDate,
-    isFavorite: false,
-    duration: `0`,
-  };
+  },
+  img: ``,
+  description: ``,
+  price: ``,
+  offers: [],
+  startDate: new Date(),
+  endDate: new Date(),
+  isFavorite: false,
+  duration: 0,
 };
 
 export default class PointController {
@@ -41,6 +37,7 @@ export default class PointController {
     this._pointEditComponent = null;
 
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
+    this._exitEdit = this._exitEdit.bind(this);
   }
 
   render(tripPoint, mode) {
@@ -48,51 +45,40 @@ export default class PointController {
     const oldPointEditComponent = this._pointEditComponent;
     this._mode = mode;
 
-    if (this._mode !== Mode.EDIT) {
-      this._createPointComponent(tripPoint);
+    this._createPointComponent(tripPoint);
+    this._pointEditComponent = new TripEditComponent(tripPoint);
 
-      //   if (oldPointComponent) {
-      //     replace(this._pointComponent, oldPointComponent);
-      //   } else {
-      //     render(this._container, this._pointComponent, RenderPosition.BEFOREEND);
-      //   }
-      // }
+    this._pointEditComponent.setSubmitHandler((evt) => {
+      evt.preventDefault();
+      const data = this._pointEditComponent.getData();
 
-      this._pointEditComponent = new TripEditComponent(tripPoint);
+      this._onDataChange(this, tripPoint, data);
+    });
 
-      this._pointEditComponent.setSubmitHandler((evt) => {
-        evt.preventDefault();
-        const data = this._pointEditComponent.getData();
-        // this._replaceEditToPoint();
-        this._onDataChange(this, tripPoint, data);
-      });
+    this._pointEditComponent.setDeleteButtonClickHandler(() => {
+      this._onDataChange(this, tripPoint, null);
+    });
 
-      // if (oldPointEditComponent) {
-      //   replace(this._pointEditComponent, oldPointEditComponent);
-      // }
-      this._pointEditComponent.setDeleteButtonClickHandler(() => {
-        this._onDataChange(this, tripPoint, null);
-      });
+    this._pointEditComponent.setCloseButtonClickHandler(this._exitEdit);
 
-      switch (mode) {
-        case Mode.DEFAULT:
-          if (oldPointEditComponent && oldPointComponent) {
-            replace(this._pointComponent, oldPointComponent);
-            replace(this._pointEditComponent, oldPointEditComponent);
-            this._replaceEditToPoint();
-          } else {
-            render(this._container, this._pointComponent, RenderPosition.BEFOREEND);
-          }
-          break;
-        case Mode.ADDING:
-          if (oldPointEditComponent && oldPointComponent) {
-            remove(oldPointComponent);
-            remove(oldPointEditComponent);
-          }
-          document.addEventListener(`keydown`, this._onEscKeyDown);
-          render(this._container, this._pointEditComponent, RenderPosition.AFTERBEGIN);
-          break;
-      }
+    switch (mode) {
+      case Mode.DEFAULT:
+        if (oldPointEditComponent && oldPointComponent) {
+          replace(this._pointComponent, oldPointComponent);
+          replace(this._pointEditComponent, oldPointEditComponent);
+          this._replaceEditToPoint();
+        } else {
+          render(this._container, this._pointComponent, RenderPosition.BEFOREEND);
+        }
+        break;
+      case Mode.ADDING:
+        if (oldPointEditComponent && oldPointComponent) {
+          remove(oldPointComponent);
+          remove(oldPointEditComponent);
+        }
+        document.addEventListener(`keydown`, this._onEscKeyDown);
+        render(this._container, this._pointEditComponent, RenderPosition.AFTERBEGIN);
+        break;
     }
   }
 
@@ -119,8 +105,9 @@ export default class PointController {
 
   _replaceEditToPoint() {
     this._pointEditComponent.reset();
-
-    replace(this._pointComponent, this._pointEditComponent);
+    if (document.contains(this._pointEditComponent.getElement())) {
+      replace(this._pointComponent, this._pointEditComponent);
+    }
     this._mode = Mode.DEFAULT;
   }
 
@@ -136,11 +123,22 @@ export default class PointController {
 
     if (isEscKey) {
       evt.preventDefault();
-      if (this._mode === Mode.ADDING) {
-        this._onDataChange(this, getEmptyPoint(Date.now()), null);
-      }
-      this._replaceEditToPoint();
-      document.removeEventListener(`keydown`, this._onEscKeyDown);
+      // if (this._mode === Mode.ADDING) {
+      //   this._onDataChange(this, EmptyPoint, null);
+      // } else {
+      //   this._replaceEditToPoint();
+      // }
+      // document.removeEventListener(`keydown`, this._onEscKeyDown);
+      this._exitEdit();
     }
+  }
+
+  _exitEdit() {
+    if (this._mode === Mode.ADDING) {
+      this._onDataChange(this, EmptyPoint, null);
+    } else {
+      this._replaceEditToPoint();
+    }
+    document.removeEventListener(`keydown`, this._onEscKeyDown);
   }
 }
