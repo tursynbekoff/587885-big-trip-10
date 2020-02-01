@@ -50,9 +50,10 @@ const renderDays = (container, days, points, onDataChange, onViewChange) => {
 };
 
 export default class BoardController {
-  constructor(container, pointsModel, tripInfoComponent) {
+  constructor(container, pointsModel, tripInfoComponent, api) {
     this._container = container;
     this._pointsModel = pointsModel;
+    this._api = api;
     this._sortingComponent = new SortingComponent();
     this._tripInfoComponent = new TripInfoComponent();
     this._dayBoardComponent = new DayBoardComponent();
@@ -175,15 +176,30 @@ export default class BoardController {
       this._pointsModel.removePoint(oldData.id);
       this._updatePoints();
     } else {
-      const isSuccess = this._pointsModel.updatePoint(oldData.id, newData);
-      if (isSuccess) {
-        if (getFullDate(oldData.startDate) === getFullDate(newData.startDate)) {
-          pointController.render(newData, TripControllerMode.DEFAULT);
+      // const isSuccess = this._pointsModel.updatePoint(oldData.id, newData);
+      // if (isSuccess) {
+      //   if (getFullDate(oldData.startDate) === getFullDate(newData.startDate)) {
+      //     pointController.render(newData, TripControllerMode.DEFAULT);
+      //     this._updatePoints();
+      //   } else {
+      //     this._updatePoints();
+      //   }
+      // }
+      this._api.updatePoint(oldData.id, newData)
+      .then((pointModel) => {
+        const isSuccess = this._pointsModel.updatePoint(oldData.id, pointModel);
+
+        if (isSuccess) {
+          // pointController.render(pointModel, TripControllerMode.DEFAULT);
           this._updatePoints();
-        } else {
-          this._updatePoints();
+          if (getFullDate(oldData.startDate) === getFullDate(pointModel.startDate)) {
+            pointController.render(pointModel, TripControllerMode.DEFAULT);
+            this._updatePoints();
+          } else {
+            this._updatePoints();
+          }
         }
-      }
+      });
     }
   }
 

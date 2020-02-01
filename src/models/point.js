@@ -43,7 +43,7 @@ export default class Point {
         })
       },
       'base_price': this.price,
-      'offers': this.offers((it) => {
+      'offers': this.offers.map((it) => {
         return {
           'title': it.title,
           'price': it.price,

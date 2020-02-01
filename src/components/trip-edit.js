@@ -1,8 +1,10 @@
-import {formatTime, getFullDate, getOffers, getTimeFromForm, getNumberFromDate, capitalizeString} from "../utils/common.js";
+import {formatTime, getFullDate, getOffers, getTimeFromForm,
+  getNumberFromDate, capitalizeString, getToStringDateFormat, getIOSTime, getDateAndTime, getUnixFromFlatpickr, getIOSfromFlatpickrTime} from "../utils/common.js";
 import {ROUTE_TYPES} from '../const.js';
 import AbstractSmartComponent from './abstract-smart-component.js';
 import flatpickr from 'flatpickr';
 import {tripDestinations, tripOffers} from '../main.js';
+import PointModel from '../models/point.js';
 
 const isAllowedDestination = (destination) => {
   const isDestinationFromList = tripDestinations.includes(destination); // поправить? тут
@@ -15,9 +17,9 @@ const isAllowedPriceValue = (price) => {
 };
 
 const isAllowedTime = (startDate, endDate) => {
-  const firstDate = getNumberFromDate(startDate);
-  const secondDate = getNumberFromDate(endDate);
-  const isStartDateLessEndDate = (firstDate) && (secondDate) && (firstDate < secondDate);
+  // const firstDate = getNumberFromDate(startDate);
+  // const secondDate = getNumberFromDate(endDate);
+  const isStartDateLessEndDate = (startDate) && (endDate) && (startDate < endDate);
   return isStartDateLessEndDate;
 };
 
@@ -137,7 +139,7 @@ const createTripEditTemplate = (tripPoint) => {
   const typeTransferMarkup = createTypeButtonMarkup(ROUTE_TYPES, 3, 9, tripPoint);
   const typeActivityMarkup = createTypeButtonMarkup(ROUTE_TYPES, 0, 3, tripPoint);
   const offersAndDescriptionMarkup = createOffersAndDescriptionMarkup(destination, offers, type);
-
+  // debugger;
   return (
     `<form class="event  event--edit" action="#" method="get">
     <header class="event__header">
@@ -175,12 +177,12 @@ const createTripEditTemplate = (tripPoint) => {
         <label class="visually-hidden" for="event-start-time-1">
           From
         </label>
-        <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${getFullDate(startDate)} ${formatTime(startDate)}">
+        <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${getDateAndTime(startDate)}">
         &mdash;
         <label class="visually-hidden" for="event-end-time-1">
           To
         </label>
-        <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${getFullDate(endDate)} ${formatTime(endDate)}">
+        <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${getDateAndTime(endDate)}">
       </div>
 
       <div class="event__field-group  event__field-group--price">
@@ -242,22 +244,21 @@ const getCheckedOffers = (element, type) => {
 
 
 const parseFormData = (form, formData) => {
-  const startDate = getTimeFromForm(formData, `event-start-time`);
-  const endDate = getTimeFromForm(formData, `event-end-time`);
+  const startDate = getIOSfromFlatpickrTime(formData, `event-start-time`);
+  const endDate = getIOSfromFlatpickrTime(formData, `event-end-time`);
   const destination = tripDestinations.find((it) => it.destination.name === formData.get(`event-destination`)).destination;
   const type = formData.get(`event-type`);
   const offers = getCheckedOffers(form, type);
   // debugger;
-  return {
-    type: type.toLowerCase(),
-    destination,
-    offers,
-    price: parseInt(formData.get(`event-price`), 10),
-    startDate,
-    endDate,
-    isFavorite: formData.get(`event-favorite`),
-    duration: endDate - startDate,
-  };
+  return new PointModel({
+    'type': type.toLowerCase(),
+    'destination': destination,
+    'offers': offers,
+    'base_price': parseInt(formData.get(`event-price`), 10),
+    'date_from': startDate,
+    'date_to': endDate,
+    'is_favorite': formData.get(`event-favorite`),
+  });
 };
 
 export default class TripEdit extends AbstractSmartComponent {
@@ -333,8 +334,8 @@ export default class TripEdit extends AbstractSmartComponent {
 
     element.querySelector(`.event__field-group--time`)
     .addEventListener(`change`, () => {
-      const startDate = element.querySelector(`#event-start-time-1`).value;
-      const endDate = element.querySelector(`#event-end-time-1`).value;
+      const startDate = getUnixFromFlatpickr(element.querySelector(`#event-start-time-1`).value);
+      const endDate = getUnixFromFlatpickr(element.querySelector(`#event-end-time-1`).value);
       saveButton.disabled = !isAllowedTime(startDate, endDate);
     });
 

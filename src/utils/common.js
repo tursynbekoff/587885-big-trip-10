@@ -1,6 +1,18 @@
 // import {MONTHS} from "../const.js";
 import moment from 'moment';
 
+export const getUnixFromFlatpickr = (date) => {
+  return moment(date, `DD/MM/YYYY HH:mm`).unix();
+};
+
+export const getIOSfromFlatpickrTime = (date) => {
+  return moment(date, `DD/MM/YYYY HH:mm`).toISOString();
+};
+
+export const getDateAndTime = (date) => {
+  return moment(date).format(`DD/MM/YY HH:mm`);
+};
+
 export const getTimeFromForm = (data, from) => {
   return moment(data.get(from), `DD/MM/YY HH:mm`).unix() * 1000;
 };
@@ -23,6 +35,14 @@ export const getFullDate = (date) => {
 
 const setTimeFormat = (value) => {
   return value < 10 ? `0${value}` : `${value}`;
+};
+
+// export const getToStringDateFormat = (date) => {
+//   return moment(date, `DD/MM/YYYY hh:mm`).format(`YYYY-MM-DDThh:mm:ss`);
+// };
+
+export const getIOSTime = (date) => {
+  return moment(date).toISOString();
 };
 
 export const capitalizeString = (string) => string.charAt(0).toUpperCase() + string.slice(1);
