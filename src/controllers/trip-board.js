@@ -30,8 +30,6 @@ const renderDays = (container, days, points, onDataChange, onViewChange) => {
     render(container, new NoPointComponent(), RenderPosition.BEFOREEND);
     return [];
   } else {
-    // render(container, sortingComponent, RenderPosition.AFTERBEGIN);
-    // debugger;
     container.innerHTML = ``;
     if (days) {
       return days.flatMap((day, index) => {
@@ -46,7 +44,6 @@ const renderDays = (container, days, points, onDataChange, onViewChange) => {
     } else {
       const dayComponent = new TripDayComponent();
       render(container, dayComponent, RenderPosition.BEFOREEND);
-      // debugger;
       return renderTripPoints(dayComponent.getElement().querySelector(`.trip-events__list`), points, onDataChange, onViewChange);
     }
   }

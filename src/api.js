@@ -24,6 +24,7 @@ export default class API {
   }
 
   getPoints() {
+    // debugger;
     return this._load({url: `points`})
        .then((response) => response.json())
        .then(Point.parsePoints);

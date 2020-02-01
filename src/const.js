@@ -14,15 +14,15 @@ export const MONTHS = {
 };
 
 export const ROUTE_TYPES = [
-  `Check-in`,
-  `Sightseeing`,
-  `Restaurant`,
-  `Bus`,
-  `Drive`,
-  `Flight`,
-  `Ship`,
-  `Taxi`,
-  `Train`,
+  `check-in`,
+  `sightseeing`,
+  `restaurant`,
+  `bus`,
+  `drive`,
+  `flight`,
+  `ship`,
+  `taxi`,
+  `train`,
 ];
 
 export const FilterType = {

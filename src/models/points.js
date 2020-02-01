@@ -28,7 +28,7 @@ export default class Points {
   // запись поинтов
   setPoints(points) {
     this._points = Array.from(points.sort((a, b) => a.startDate > b.startDate));
-    this._callHandlers(this._dataChangeHandlers);
+    // this._callHandlers(this._dataChangeHandlers);
   }
 
   setDays() {

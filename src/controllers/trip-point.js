@@ -10,7 +10,7 @@ export const Mode = {
 
 export const EmptyPoint = {
   id: ``,
-  type: `Bus`,
+  type: `bus`,
   destination: {
     name: ``,
     description: ``,

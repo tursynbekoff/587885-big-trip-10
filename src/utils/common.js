@@ -25,6 +25,8 @@ const setTimeFormat = (value) => {
   return value < 10 ? `0${value}` : `${value}`;
 };
 
+export const capitalizeString = (string) => string.charAt(0).toUpperCase() + string.slice(1);
+
 export const formatTimeDuration = (duration) => {
   const daysNotFormat = moment.duration(duration).days();
   const days = daysNotFormat >= 1 ? `${setTimeFormat(daysNotFormat)}D ` : ``;
@@ -43,5 +45,16 @@ export const getOffers = function (offers, type) {
   } else {
     return [];
   }
+};
+
+export const getRightPriceForOffers = (points, offers) => {
+  const suitibleOffers = points.map((point) => getOffers(offers, point.type));
+  points.forEach((point, index) => {
+    if (suitibleOffers[index].length > 0) {
+      point.offers.forEach(function (pointOffer) {
+        pointOffer.price = suitibleOffers[index].find((offer) => offer.title === pointOffer.title).price;
+      });
+    }
+  });
 };
 
