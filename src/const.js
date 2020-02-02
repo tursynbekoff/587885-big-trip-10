@@ -5,6 +5,7 @@ export const TRANSPORT_TYPES = [
   `ship`,
   `taxi`,
   `train`,
+  `transport`,
 ];
 
 export const ACTIVITY_TYPES = [

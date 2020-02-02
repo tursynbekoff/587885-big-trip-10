@@ -8,7 +8,7 @@ import {RenderPosition, render} from './utils/render.js';
 import TripInfoComponent from './components/trip-info';
 import {getRightPriceForOffers} from './utils/common.js';
 
-const AUTHORIZATION = `Basic w590ik2988qaaqr3`;
+const AUTHORIZATION = `Basic w590ik2988qaaqr3qq`;
 const END_POINT = `https://htmlacademy-es-10.appspot.com/big-trip`;
 const api = new API(END_POINT, AUTHORIZATION);
 const pointsModel = new PointsModel();
