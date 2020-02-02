@@ -393,13 +393,12 @@ export default class TripEdit extends AbstractSmartComponent {
   _applyFlatpickrItem(dateType) {
     const dateElement = this.getElement().querySelector(`#event-${dateType}-time-1`);
     this._flatpickr = flatpickr(dateElement, {
-      allowInput: true,
-      altInout: true,
-      altFormat: `d/m/y H:i`,
-      dateFormat: `d/m/y H:i`,
-      // eslint-disable-next-line camelcase
-      time_24hr: true,
-      defaultDate: this._tripPoint[dateType] === null ? new Date() : this._tripPoint[dateType],
+      'allowInput': true,
+      'altInout': true,
+      'altFormat': `d/m/y H:i`,
+      'dateFormat': `d/m/y H:i`,
+      'time_24hr': true,
+      'defaultDate': this._tripPoint[dateType] === null ? new Date() : this._tripPoint[dateType],
     });
   }
 }
