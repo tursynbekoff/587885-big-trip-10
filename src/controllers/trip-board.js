@@ -18,20 +18,20 @@ const renderTripPoints = (tripsListElement, points, onDataChange, onViewChange) 
 };
 
 const renderSort = (container, sortingComponent, points) => {
-
   if (points.length > 0) {
+    sortingComponent.show();
     render(container, sortingComponent, RenderPosition.AFTERBEGIN);
   } else {
-    sortingComponent.removeElement();
+    sortingComponent.hide();
   }
 };
 
 const renderDays = (container, days, points, onDataChange, onViewChange) => {
+  container.innerHTML = ``;
   if (points.length === 0) {
     render(container, new NoPointComponent(), RenderPosition.BEFOREEND);
     return [];
   } else {
-    container.innerHTML = ``;
     if (days) {
       return days.flatMap((day, index) => {
         const dayComponent = new TripDayComponent(day, index + 1);
