@@ -126,7 +126,6 @@ export default class BoardController {
 
   _renderPoints(points, days) {
     renderSort(this._container, this._sortingComponent, points);
-    // ????
     const newPoints = renderDays(this._dayBoardComponent.getElement(), days, points, this._onDataChange, this._onViewChange);
     this._showedPointControllers = this._showedPointControllers.concat(newPoints);
     this._showedPointControllers.forEach((controller) => {
