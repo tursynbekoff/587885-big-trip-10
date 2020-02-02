@@ -1,7 +1,7 @@
 import TripPointComponent from '../components/trip-point.js';
 import TripEditComponent from '../components/trip-edit.js';
 import {RenderPosition, render, replace, remove} from '../utils/render.js';
-import {MS_PER_SECONDS} from '../const.js';
+import {MS_PER_SECONDS, DefaultDataButton} from '../const.js';
 
 const SHAKE_ANIMATION_TIMEOUT = 600;
 
@@ -127,8 +127,8 @@ export default class PointController {
       this._pointComponent.getElement().style.animation = ``;
 
       this._pointEditComponent.setData({
-        SAVE_BUTTON_TEXT: `Save`,
-        DELETE_BUTTON_TEXT: `Delete`,
+        SAVE_BUTTON_TEXT: DefaultDataButton.SAVE_BUTTON_TEXT,
+        DELETE_BUTTON_TEXT: DefaultDataButton.DELETE_BUTTON_TEXT,
       });
     }, SHAKE_ANIMATION_TIMEOUT);
   }
