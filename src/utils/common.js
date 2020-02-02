@@ -1,12 +1,13 @@
-// import {MONTHS} from "../const.js";
 import moment from 'moment';
+
+const setTimeFormat = (value) => {
+  return value < 10 ? `0${value}` : `${value}`;
+};
+
+export const sortPoints = (points) => points.sort((a, b) => a.startDate > b.startDate);
 
 export const getUnixFromFlatpickr = (date) => {
   return moment(date, `DD/MM/YYYY HH:mm`).unix();
-};
-
-export const getIOSfromFlatpickrTime = (date) => {
-  return moment(date, `DD/MM/YYYY HH:mm`).toISOString();
 };
 
 export const getDateAndTime = (date) => {
@@ -15,10 +16,6 @@ export const getDateAndTime = (date) => {
 
 export const getIOSTimeFromForm = (data, from) => {
   return moment(data.get(from), `DD/MM/YY HH:mm`).toISOString();
-};
-
-export const getNumberFromDate = (date) => {
-  return moment(date).unix();
 };
 
 export const getShortMonthAndDate = (date) => {
@@ -32,14 +29,6 @@ export const formatTime = (date) => {
 export const getFullDate = (date) => {
   return moment(date).format(`DD/MM/YY`);
 };
-
-const setTimeFormat = (value) => {
-  return value < 10 ? `0${value}` : `${value}`;
-};
-
-// export const getToStringDateFormat = (date) => {
-//   return moment(date, `DD/MM/YYYY hh:mm`).format(`YYYY-MM-DDThh:mm:ss`);
-// };
 
 export const getIOSTime = (date) => {
   return moment(date).toISOString();
@@ -57,7 +46,6 @@ export const formatTimeDuration = (duration) => {
   return days + hours + minutes;
 };
 
-// это важно для отрисовки!
 export const getOffers = function (offers, type) {
   const suitibleOffers = offers.filter((it) => it.type.toLowerCase() === type.toLowerCase());
   if (suitibleOffers[0]) {

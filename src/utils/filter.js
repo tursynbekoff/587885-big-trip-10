@@ -29,12 +29,3 @@ export const getPointsByFilter = (points, filterType) => {
       return points;
   }
 };
-
-// export const getFuturePoints = (points, date) => {
-//   return getFilterPoints(points, date, flag);
-// };
-
-// export const getPastPoints = (points, date) => {
-//   const flag = false;
-//   return getFilterPoints(points, date, flag);
-// };

@@ -2,6 +2,8 @@ import TripPointComponent from '../components/trip-point.js';
 import TripEditComponent from '../components/trip-edit.js';
 import {RenderPosition, render, replace, remove} from '../utils/render.js';
 
+const SHAKE_ANIMATION_TIMEOUT = 600;
+
 export const Mode = {
   ADDING: `adding`,
   DEFAULT: `default`,
@@ -17,7 +19,7 @@ export const EmptyPoint = {
   },
   img: ``,
   description: ``,
-  price: ``,
+  price: 0,
   offers: [],
   startDate: new Date(),
   endDate: new Date(),
@@ -50,12 +52,20 @@ export default class PointController {
 
     this._pointEditComponent.setSubmitHandler((evt) => {
       evt.preventDefault();
+      this._pointEditComponent.setData({
+        saveButtonText: `Saving...`,
+      });
+
       const data = this._pointEditComponent.getData();
 
       this._onDataChange(this, tripPoint, data);
     });
 
     this._pointEditComponent.setDeleteButtonClickHandler(() => {
+      this._pointEditComponent.setData({
+        deleteButtonText: `Deleting...`,
+      });
+
       this._onDataChange(this, tripPoint, null);
     });
 
@@ -88,6 +98,27 @@ export default class PointController {
     }
   }
 
+  destroy() {
+    remove(this._pointEditComponent);
+    remove(this._pointComponent);
+    document.removeEventListener(`keydown`, this._onEscKeyDown);
+  }
+
+  shake() {
+    this._pointEditComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+    this._pointComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+
+    setTimeout(() => {
+      this._pointEditComponent.getElement().style.animation = ``;
+      this._pointComponent.getElement().style.animation = ``;
+
+      this._pointEditComponent.setData({
+        saveButtonText: `Save`,
+        deleteButtonText: `Delete`,
+      });
+    }, SHAKE_ANIMATION_TIMEOUT);
+  }
+
   _createPointComponent(tripPoint) {
     this._pointComponent = new TripPointComponent(tripPoint);
 
@@ -95,12 +126,6 @@ export default class PointController {
       this._replacePointToEdit();
       document.addEventListener(`keydown`, this._onEscKeyDown);
     });
-  }
-
-  destroy() {
-    remove(this._pointEditComponent);
-    remove(this._pointComponent);
-    document.removeEventListener(`keydown`, this._onEscKeyDown);
   }
 
   _replaceEditToPoint() {
@@ -123,12 +148,6 @@ export default class PointController {
 
     if (isEscKey) {
       evt.preventDefault();
-      // if (this._mode === Mode.ADDING) {
-      //   this._onDataChange(this, EmptyPoint, null);
-      // } else {
-      //   this._replaceEditToPoint();
-      // }
-      // document.removeEventListener(`keydown`, this._onEscKeyDown);
       this._exitEdit();
     }
   }

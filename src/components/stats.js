@@ -48,7 +48,6 @@ export default class Stats extends AbstractSmartComponent {
     const timeSpendCtx = element.querySelector(`.statistics__chart--time-spent`);
 
     this._resetCharts();
-    // debugger;
     this._moneyChart = renderMoneyChart(moneyCtx, this._pointsModel.getPoints());
     this._transportChart = renderTransportChart(transportCtx, this._pointsModel.getPoints());
     this._timeSpendChart = renderTimeSpendChart(timeSpendCtx, this._pointsModel.getPoints());
@@ -70,7 +69,6 @@ export default class Stats extends AbstractSmartComponent {
   }
 
   rerender() {
-    // debugger;
     super.rerender();
 
     this._renderCharts();

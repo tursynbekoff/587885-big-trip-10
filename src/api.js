@@ -24,18 +24,23 @@ export default class API {
   }
 
   getPoints() {
-    // debugger;
     return this._load({url: `points`})
        .then((response) => response.json())
        .then(Point.parsePoints);
   }
 
   createPoint(point) {
-
+    return this._load({
+      url: `points`,
+      method: Method.POST,
+      body: JSON.stringify(point.toRAW()),
+      headers: new Headers({'Content-Type': `application/json`})
+    })
+      .then((response) => response.json())
+      .then(Point.parsePoint);
   }
 
   updatePoint(id, data) {
-    debugger;
     return this._load({
       url: `points/${id}`,
       method: Method.PUT,
@@ -47,7 +52,7 @@ export default class API {
   }
 
   deletePoint(id) {
-
+    return this._load({url: `points/${id}`, method: Method.DELETE});
   }
 
   getOffers() {

@@ -1,10 +1,8 @@
 import AbstractSmartComponent from './abstract-smart-component.js';
-import {getShortMonthAndDate} from '../utils/common.js';
+import {getShortMonthAndDate, sortPoints} from '../utils/common.js';
 
-
-// не забыть поправить константы и функцию сортед дейс, она повторяется и здесь нахер не нужна
 const createCitiesTemplate = (points) => {
-  const sortedPoints = points.sort((a, b) => a.startDate > b.startDate);
+  const sortedPoints = sortPoints(points);
   if (sortedPoints.length <= 2) {
     return sortedPoints.map(({destination}) => destination.name).join(` — `);
   } else {
@@ -13,7 +11,7 @@ const createCitiesTemplate = (points) => {
 };
 
 const getTripDates = (points) => {
-  const sortedPoints = points.sort((a, b) => a.startDate > b.startDate);
+  const sortedPoints = sortPoints(points);
   return `${getShortMonthAndDate(sortedPoints[0].startDate)} — ${getShortMonthAndDate(sortedPoints[sortedPoints.length - 1].startDate)}`;
 };
 
@@ -57,7 +55,7 @@ export default class TripInfo extends AbstractSmartComponent {
   }
 
   getTemplate() {
-    return createTripInfoTemplate(this._pointsModel.getPoints());
+    return createTripInfoTemplate(this._pointsModel.getPointsAll());
   }
 
   recoveryListeners() {

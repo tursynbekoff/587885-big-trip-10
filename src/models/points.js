@@ -1,5 +1,6 @@
 import moment from 'moment';
 import {getPointsByFilter} from '../utils/filter.js';
+import {sortPoints} from '../utils/common.js';
 import {FilterType} from '../const.js';
 
 export default class Points {
@@ -12,7 +13,6 @@ export default class Points {
     this._filterChangeHandlers = [];
   }
 
-  // получение поинтов
   getPoints() {
     return getPointsByFilter(this._points, this._activeFilterType);
   }
@@ -25,10 +25,8 @@ export default class Points {
     return this._days;
   }
 
-  // запись поинтов
   setPoints(points) {
-    this._points = Array.from(points.sort((a, b) => a.startDate > b.startDate));
-    // this._callHandlers(this._dataChangeHandlers);
+    this._points = Array.from(sortPoints(points));
   }
 
   setDays() {
