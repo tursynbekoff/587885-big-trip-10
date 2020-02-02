@@ -100,33 +100,33 @@ const getPointsCountByType = (points) => {
 
 const getSortedKeysFromMap = (map) => Array.from(map.keys()).sort((a, b) => map.get(b) - map.get(a));
 
-export const renderMoneyChart = (moneyCtx, points) => {
-  const pointsPriceByType = getPointsPriceByType(points);
-
-  const sortedPrice = getSortedKeysFromMap(pointsPriceByType);
-
-  const chartConfig = DefaultChartConfig.getDefaultChart();
-  chartConfig.data.labels = sortedPrice;
-  chartConfig.data.datasets[0].data = sortedPrice.map((it) => pointsPriceByType.get(it));
-  chartConfig.options.title.text = Statistic.MONEY.toUpperCase();
-  chartConfig.options.plugins.datalabels.formatter = (it) => `${it}${EURO}`;
-
-  return new Chart(moneyCtx, chartConfig);
-};
-
 export const Statistic = {
   MONEY: `money`,
   TRANSPORT: `transport`,
   TIME_SPEND: `time-spent`,
 };
 
-export const renderTransportChart = (transportCtx, points) => {
-  const pointsCountByType = getPointsCountByType(points);
-  const sortedCount = getSortedKeysFromMap(pointsCountByType);
+export const renderMoneyChart = (moneyCtx, points) => {
+  const pointsPriceByType = getPointsPriceByType(points);
+
+  const sortedPriceTypes = getSortedKeysFromMap(pointsPriceByType);
 
   const chartConfig = DefaultChartConfig.getDefaultChart();
-  chartConfig.data.labels = sortedCount;
-  chartConfig.data.datasets[0].data = sortedCount.map((it) => pointsCountByType.get(it));
+  chartConfig.data.labels = sortedPriceTypes;
+  chartConfig.data.datasets[0].data = sortedPriceTypes.map((it) => pointsPriceByType.get(it));
+  chartConfig.options.title.text = Statistic.MONEY.toUpperCase();
+  chartConfig.options.plugins.datalabels.formatter = (it) => `${it}${EURO}`;
+
+  return new Chart(moneyCtx, chartConfig);
+};
+
+export const renderTransportChart = (transportCtx, points) => {
+  const pointsCountByType = getPointsCountByType(points);
+  const sortedCountTransports = getSortedKeysFromMap(pointsCountByType);
+
+  const chartConfig = DefaultChartConfig.getDefaultChart();
+  chartConfig.data.labels = sortedCountTransports;
+  chartConfig.data.datasets[0].data = sortedCountTransports.map((it) => pointsCountByType.get(it));
   chartConfig.options.title.text = Statistic.TRANSPORT.toUpperCase();
   chartConfig.options.plugins.datalabels.formatter = (it) => `${it}x`;
 
@@ -135,10 +135,10 @@ export const renderTransportChart = (transportCtx, points) => {
 
 export const renderTimeSpendChart = (timeSpendCtx, points) => {
   const pointsTimeSpend = getPointsTimeSpendByType(points);
-  const sortedTimeSpend = getSortedKeysFromMap(pointsTimeSpend);
+  const sortedTimeSpendTypes = getSortedKeysFromMap(pointsTimeSpend);
   const chartConfig = DefaultChartConfig.getDefaultChart();
-  chartConfig.data.labels = sortedTimeSpend;
-  chartConfig.data.datasets[0].data = sortedTimeSpend.map((it) => pointsTimeSpend.get(it));
+  chartConfig.data.labels = sortedTimeSpendTypes;
+  chartConfig.data.datasets[0].data = sortedTimeSpendTypes.map((it) => pointsTimeSpend.get(it));
   chartConfig.options.title.text = Statistic.TIME_SPEND.toUpperCase();
   chartConfig.options.plugins.datalabels.formatter = (it) => `${Math.floor(it)}H`;
 

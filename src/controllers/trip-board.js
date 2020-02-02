@@ -18,20 +18,20 @@ const renderTripPoints = (tripsListElement, points, onDataChange, onViewChange) 
 };
 
 const renderSort = (container, sortingComponent, points) => {
-
   if (points.length > 0) {
+    sortingComponent.show();
     render(container, sortingComponent, RenderPosition.AFTERBEGIN);
   } else {
-    sortingComponent.removeElement();
+    sortingComponent.hide();
   }
 };
 
 const renderDays = (container, days, points, onDataChange, onViewChange) => {
+  container.innerHTML = ``;
   if (points.length === 0) {
     render(container, new NoPointComponent(), RenderPosition.BEFOREEND);
     return [];
   } else {
-    container.innerHTML = ``;
     if (days) {
       return days.flatMap((day, index) => {
         const dayComponent = new TripDayComponent(day, index + 1);
@@ -72,6 +72,7 @@ export default class BoardController {
 
     this._sortingComponent.setSortTypeChangeHandler(this._onSortTypeChange);
     this._pointsModel.setFilterChangeHandler(this._onFilterChange);
+
   }
 
   hide() {
@@ -100,11 +101,14 @@ export default class BoardController {
       return;
     }
 
+    const editingController = this._showedPointControllers.find((it) => it.getMode() === TripControllerMode.EDIT);
+    if (editingController) {
+      editingController.exitEdit();
+    }
     this._creatingPoint = new PointController(this._dayBoardComponent.getElement(), this._onDataChange, this._onViewChange);
     this._emptyPoint = EmptyPoint;
 
     this._creatingPoint.render(this._emptyPoint, TripControllerMode.ADDING);
-
 
   }
 
@@ -113,10 +117,21 @@ export default class BoardController {
     this._showedPointControllers = [];
   }
 
+  _removeCreatingPoint() {
+    if (this._creatingPoint) {
+      this._creatingPoint.destroy();
+      this._creatingPoint = null;
+    }
+  }
+
   _renderPoints(points, days) {
     renderSort(this._container, this._sortingComponent, points);
     const newPoints = renderDays(this._dayBoardComponent.getElement(), days, points, this._onDataChange, this._onViewChange);
     this._showedPointControllers = this._showedPointControllers.concat(newPoints);
+    this._showedPointControllers.forEach((controller) => {
+      controller.getPointComponent().setEditButtonHandler(this._removeCreatingPoint.bind(this));
+    });
+
     this._tripInfoComponent.rerender();
   }
 
@@ -148,6 +163,7 @@ export default class BoardController {
         this._currentSortType = SortType.DEFAULT;
         break;
     }
+    this._removeCreatingPoint();
     this._renderPoints(sortedPoints, sortedDays);
   }
 
@@ -189,10 +205,8 @@ export default class BoardController {
         if (isSuccess) {
           if (getFullDate(oldData.startDate) === getFullDate(pointModel.startDate)) {
             pointController.render(pointModel, TripControllerMode.DEFAULT);
-            this._updatePoints();
-          } else {
-            this._updatePoints();
           }
+          this._updatePoints();
         }
       })
       .catch(() => {

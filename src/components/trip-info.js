@@ -1,9 +1,11 @@
 import AbstractSmartComponent from './abstract-smart-component.js';
 import {getShortMonthAndDate, sortPoints} from '../utils/common.js';
 
+const SHORT_VIEW_POINT_AMOUNT = 2;
+
 const createCitiesTemplate = (points) => {
   const sortedPoints = sortPoints(points);
-  if (sortedPoints.length <= 2) {
+  if (sortedPoints.length <= SHORT_VIEW_POINT_AMOUNT) {
     return sortedPoints.map(({destination}) => destination.name).join(` — `);
   } else {
     return `${sortedPoints[0].destination.name} — ... —  ${sortedPoints[sortedPoints.length - 1].destination.name}`;

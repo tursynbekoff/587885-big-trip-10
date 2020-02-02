@@ -32,7 +32,7 @@ export default class Points {
   setDays() {
     const setOfDays = new Set();
     this.getPoints().forEach((it) => setOfDays.add(moment(new Date(it.startDate)).format(`YYYY/MM/DD`)));
-    this._days = Array.from(setOfDays).sort((a, b) => a > b).map((it) => new Date(it));
+    this._days = Array.from(setOfDays).map((it) => new Date(it)).sort((a, b) => a - b);
     this._callHandlers(this._dataChangeHandlers);
   }
 
