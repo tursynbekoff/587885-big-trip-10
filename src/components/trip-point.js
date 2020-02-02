@@ -1,5 +1,4 @@
-// import {createOffersTemplate} from './trip-offers';
-import {formatTimeDuration, formatTime} from '../utils/common.js';
+import {formatTimeDuration, formatTime, capitalizeString} from '../utils/common.js';
 import AbstractComponent from './abstract-component.js';
 
 const createOffersTemplate = (offers) => {
@@ -18,19 +17,16 @@ const createOffersTemplate = (offers) => {
 
 const createTripPointTemplate = (tripPoint) => {
   const {type, destination, price, offers, startDate, endDate, duration} = tripPoint;
-  // const type =  type.charAt(0).toUpperCase() + type.slice(1);
-  // debugger;
   let preposition = `to`;
   if ((type === `check`) || (type === `sightseeing`) || (type === `restaurant`)) {
     preposition = `in`;
-    // debugger;
   }
   return `<li class="trip-events__item">
   <div class="event">
     <div class="event__type">
       <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
     </div>
-    <h3 class="event__title">${type.charAt(0).toUpperCase() + type.slice(1)} ${preposition} ${destination.name}</h3>
+    <h3 class="event__title">${capitalizeString(type)} ${preposition} ${destination.name}</h3>
 
     <div class="event__schedule">
       <p class="event__time">

@@ -1,4 +1,5 @@
 import AbstractComponent from './abstract-component.js';
+import {capitalizeString} from '../utils/common.js';
 
 const FILTER_ID_PREFIX = `filter-`;
 
@@ -14,7 +15,7 @@ const createFilterMarkup = (filter, isChecked) => {
             id="filter-${name}"
             class="trip-filters__filter-input  visually-hidden"
             type="radio" name="trip-filter" value="${name}" ${isChecked ? `checked` : ``}>
-            <label class="trip-filters__filter-label" for="filter-${name}">${name.charAt(0).toUpperCase() + name.slice(1)}</label>
+            <label class="trip-filters__filter-label" for="filter-${name}">${capitalizeString(name)}</label>
           </div>`;
 };
 

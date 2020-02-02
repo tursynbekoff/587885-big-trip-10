@@ -6,10 +6,9 @@ import PointsModel from './models/points.js';
 import BoardController from './controllers/trip-board.js';
 import {RenderPosition, render} from './utils/render.js';
 import TripInfoComponent from './components/trip-info';
-// import {createTripPoints} from './mock/trip-point';
 import {getRightPriceForOffers} from './utils/common.js';
 
-const AUTHORIZATION = `Basic w590ik2988qaaqrrr3`;
+const AUTHORIZATION = `Basic w590ik2988qaaqr3`;
 const END_POINT = `https://htmlacademy-es-10.appspot.com/big-trip`;
 const api = new API(END_POINT, AUTHORIZATION);
 const pointsModel = new PointsModel();
@@ -54,8 +53,7 @@ api.getDestinations()
 export const tripOffers = [];
 api.getOffers().then((offers) => offers.forEach((it) => tripOffers.push(it)))
   .then(() => api.getPoints()).then((points) => {
-    // debugger;
-    getRightPriceForOffers(points, tripOffers); // we need this function, because price of offer points and tripOffers are different
+    getRightPriceForOffers(points, tripOffers);
     pointsModel.setPoints(points);
     pointsModel.setDays();
   }).then(() => boardController.render());
@@ -76,10 +74,3 @@ siteMenuComponent.setClickHandler((menuItem) => {
       break;
   }
 });
-
-// api.getDestinations()
-// .then((points) => {
-//   pointsModel.setPoints(points);
-//   pointsModel.setDays();
-//   boardController.render();
-// });

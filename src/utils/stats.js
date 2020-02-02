@@ -2,17 +2,9 @@
 import Chart from "chart.js";
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import moment from "moment";
-import {ROUTE_TYPES} from '../const.js';
-
-const TYPE_TRANSPORT_BEGINNING = 3;
+import {TRANSPORT_TYPES} from '../const.js';
 
 const EURO = `\u20AC`;
-
-export const Statistic = {
-  MONEY: `money`,
-  TRANSPORT: `transport`,
-  TIME_SPEND: `time-spent`,
-};
 
 class DefaultChartConfig {
   static getDefaultChart() {
@@ -91,11 +83,10 @@ const getPointsPriceByType = (points) => {
 };
 
 const getPointsCountByType = (points) => {
-  const typeTransport = ROUTE_TYPES.slice(TYPE_TRANSPORT_BEGINNING);
   const pointsCountByType = new Map();
 
   points.forEach((it) => {
-    if (!typeTransport.includes(it.type)) {
+    if (!TRANSPORT_TYPES.includes(it.type)) {
       return;
     }
     if (!pointsCountByType.has(it.type)) {
@@ -121,6 +112,12 @@ export const renderMoneyChart = (moneyCtx, points) => {
   chartConfig.options.plugins.datalabels.formatter = (it) => `${it}${EURO}`;
 
   return new Chart(moneyCtx, chartConfig);
+};
+
+export const Statistic = {
+  MONEY: `money`,
+  TRANSPORT: `transport`,
+  TIME_SPEND: `time-spent`,
 };
 
 export const renderTransportChart = (transportCtx, points) => {
