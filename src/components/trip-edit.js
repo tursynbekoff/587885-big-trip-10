@@ -1,17 +1,17 @@
 import {getOffers, getIOSTimeFromForm, capitalizeString, getDateAndTime, getUnixFromFlatpickr} from "../utils/common.js";
-import {ACTIVITY_TYPES, TRANSPORT_TYPES} from '../const.js';
+import {ACTIVITY_TYPES, TRANSPORT_TYPES, MS_PER_SECONDS, DefaultDataButton} from '../const.js';
 import AbstractSmartComponent from './abstract-smart-component.js';
 import flatpickr from 'flatpickr';
 import {tripDestinations, tripOffers} from '../main.js';
 import PointModel from '../models/point.js';
 
-const DefaultData = {
-  deleteButtonText: `Delete`,
-  saveButtonText: `Save`,
+const Preposition = {
+  ACTIVITY: `in`,
+  TRANSPORT: `to`,
 };
 
 const isAllowedDestination = (destination) => {
-  const isDestinationFromList = tripDestinations.includes(destination);
+  const isDestinationFromList = tripDestinations.map((it) => it.destination.name).includes(destination);
   return isDestinationFromList;
 };
 
@@ -128,14 +128,13 @@ const createOffersAndDescriptionMarkup = (destination, offers, type) => {
 };
 
 const createTripEditTemplate = (tripPoint, externalData) => {
-
   const {type, destination, price, offers, startDate, endDate, isFavorite} = tripPoint;
-  const isBlockSaveButton = isAllowedDestination(destination) && isAllowedPriceValue && isAllowedTime(startDate, endDate);
-  const deleteButtonText = externalData.deleteButtonText;
-  const saveButtonText = externalData.saveButtonText;
-  let preposition = `to`;
-  if ((type === `check`) || (type === `sightseeing`) || (type === `restaurant`)) {
-    preposition = `in`;
+  const isBlockSaveButton = !(isAllowedDestination(destination.name) && isAllowedPriceValue(price) && isAllowedTime(startDate, endDate));
+  const deleteButtonText = externalData.DELETE_BUTTON_TEXT;
+  const saveButtonText = externalData.SAVE_BUTTON_TEXT;
+  let preposition = Preposition.TRANSPORT;
+  if (ACTIVITY_TYPES.includes(type)) {
+    preposition = Preposition.ACTIVITY;
   }
   const typeTransferMarkup = createTypeButtonMarkup(TRANSPORT_TYPES, tripPoint);
   const typeActivityMarkup = createTypeButtonMarkup(ACTIVITY_TYPES, tripPoint);
@@ -265,7 +264,7 @@ export default class TripEdit extends AbstractSmartComponent {
     super();
     this._original = tripPoint;
     this._tripPoint = Object.assign({}, tripPoint);
-    this._externalData = DefaultData;
+    this._externalData = DefaultDataButton;
     this._flatpickr = null;
     this._applyFlatpickr();
     this._subscribeOnEvents();
@@ -310,7 +309,7 @@ export default class TripEdit extends AbstractSmartComponent {
   }
 
   setData(data) {
-    this._externalData = Object.assign({}, DefaultData, data);
+    this._externalData = Object.assign({}, DefaultDataButton, data);
     this.rerender();
   }
 
@@ -345,7 +344,7 @@ export default class TripEdit extends AbstractSmartComponent {
     element.querySelector(`.event__type-list`)
     .addEventListener(`change`, (evt) => {
       this._tripPoint.type = (evt.target.value).toLowerCase();
-      this._tripPoint.offers = getOffers(tripOffers, this._tripPoint.type);
+      this._tripPoint.offers = [];
       this.rerender();
     });
 
@@ -356,11 +355,20 @@ export default class TripEdit extends AbstractSmartComponent {
       saveButton.disabled = !isAllowedPriceValue(priceValue);
     });
 
+    const offersElement = element.querySelector(`.event__available-offers`);
+    if (offersElement) {
+      offersElement.addEventListener(`change`, (evt) => {
+        this._tripPoint.offers = getCheckedOffers(evt.currentTarget, this._tripPoint.type);
+      });
+    }
+
     element.querySelector(`.event__field-group--time`)
     .addEventListener(`change`, () => {
       const startDate = getUnixFromFlatpickr(element.querySelector(`#event-start-time-1`).value);
       const endDate = getUnixFromFlatpickr(element.querySelector(`#event-end-time-1`).value);
       saveButton.disabled = !isAllowedTime(startDate, endDate);
+      this._tripPoint.startDate = new Date(startDate * MS_PER_SECONDS);
+      this._tripPoint.endDate = new Date(endDate * MS_PER_SECONDS);
     });
 
     element.querySelector(`.event__input--destination`)
@@ -369,8 +377,11 @@ export default class TripEdit extends AbstractSmartComponent {
       const TRIP_DESTINATIONS = tripDestinations;
       saveButton.disabled = !isAllowedDestination(destinationName);
       const destination = TRIP_DESTINATIONS.filter((it) => it.destination.name === destinationName)[0];
-
-      this._tripPoint.destination = destination.destination;
+      if (destination) {
+        this._tripPoint.destination = destination.destination;
+      } else {
+        this._tripPoint.destination = ``;
+      }
       this.rerender();
     });
   }

@@ -1,8 +1,14 @@
 import TripPointComponent from '../components/trip-point.js';
 import TripEditComponent from '../components/trip-edit.js';
 import {RenderPosition, render, replace, remove} from '../utils/render.js';
+import {MS_PER_SECONDS} from '../const.js';
 
 const SHAKE_ANIMATION_TIMEOUT = 600;
+
+const AnimationButtonText = {
+  SAVING: `Saving...`,
+  DELETING: `Deleting...`,
+};
 
 export const Mode = {
   ADDING: `adding`,
@@ -39,7 +45,7 @@ export default class PointController {
     this._pointEditComponent = null;
 
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
-    this._exitEdit = this._exitEdit.bind(this);
+    this.exitEdit = this.exitEdit.bind(this);
   }
 
   render(tripPoint, mode) {
@@ -53,7 +59,7 @@ export default class PointController {
     this._pointEditComponent.setSubmitHandler((evt) => {
       evt.preventDefault();
       this._pointEditComponent.setData({
-        saveButtonText: `Saving...`,
+        SAVE_BUTTON_TEXT: AnimationButtonText.SAVING,
       });
 
       const data = this._pointEditComponent.getData();
@@ -63,13 +69,13 @@ export default class PointController {
 
     this._pointEditComponent.setDeleteButtonClickHandler(() => {
       this._pointEditComponent.setData({
-        deleteButtonText: `Deleting...`,
+        DELETE_BUTTON_TEXT: AnimationButtonText.DELETING,
       });
 
       this._onDataChange(this, tripPoint, null);
     });
 
-    this._pointEditComponent.setCloseButtonClickHandler(this._exitEdit);
+    this._pointEditComponent.setCloseButtonClickHandler(this.exitEdit);
 
     switch (mode) {
       case Mode.DEFAULT:
@@ -92,6 +98,10 @@ export default class PointController {
     }
   }
 
+  getPointComponent() {
+    return this._pointComponent;
+  }
+
   setDefaultView() {
     if (this._mode !== Mode.DEFAULT) {
       this._replaceEditToPoint();
@@ -104,19 +114,32 @@ export default class PointController {
     document.removeEventListener(`keydown`, this._onEscKeyDown);
   }
 
+  getMode() {
+    return this._mode;
+  }
+
   shake() {
-    this._pointEditComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
-    this._pointComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+    this._pointEditComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / MS_PER_SECONDS}s`;
+    this._pointComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / MS_PER_SECONDS}s`;
 
     setTimeout(() => {
       this._pointEditComponent.getElement().style.animation = ``;
       this._pointComponent.getElement().style.animation = ``;
 
       this._pointEditComponent.setData({
-        saveButtonText: `Save`,
-        deleteButtonText: `Delete`,
+        SAVE_BUTTON_TEXT: `Save`,
+        DELETE_BUTTON_TEXT: `Delete`,
       });
     }, SHAKE_ANIMATION_TIMEOUT);
+  }
+
+  exitEdit() {
+    if (this._mode === Mode.ADDING) {
+      this._onDataChange(this, EmptyPoint, null);
+    } else {
+      this._replaceEditToPoint();
+    }
+    document.removeEventListener(`keydown`, this._onEscKeyDown);
   }
 
   _createPointComponent(tripPoint) {
@@ -148,16 +171,7 @@ export default class PointController {
 
     if (isEscKey) {
       evt.preventDefault();
-      this._exitEdit();
+      this.exitEdit();
     }
-  }
-
-  _exitEdit() {
-    if (this._mode === Mode.ADDING) {
-      this._onDataChange(this, EmptyPoint, null);
-    } else {
-      this._replaceEditToPoint();
-    }
-    document.removeEventListener(`keydown`, this._onEscKeyDown);
   }
 }
